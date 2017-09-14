@@ -7,6 +7,19 @@ from skcuda import cublas, misc
 # Also in http://arxiv.org/pdf/0811.1081.pdf
 # run preprocessmat! before running this
 def CUDA_GSPCA(X, num_pcs, epsilon=0.0001, max_iter=10000):
+
+	"""
+	Compute the first <num_pcs> principal components of X using the pycuda library.
+
+	n: number of samples in X
+	p: number of dimmensions of X
+	num_pcs: number of principal components to compute
+
+
+	Input:
+	X - nxp numpy.array(dtype=float32): data matrix that needs to be reduced
+	num_pcs - 
+
 	
 	h = cublas.cublasCreate() # create a handle to the c library
 
