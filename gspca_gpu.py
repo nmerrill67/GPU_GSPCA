@@ -15,11 +15,17 @@ def CUDA_GSPCA(X, num_pcs, epsilon=0.0001, max_iter=10000):
 	p: number of dimmensions of X
 	num_pcs: number of principal components to compute
 
+	Note that this function takes as input and returns numpy arrays, not gpuarrays. The gpu processing is all done internally in the function.
 
 	Input:
 	X - nxp numpy.array(dtype=float32): data matrix that needs to be reduced
-	num_pcs - 
-
+	num_pcs - int: number of principal components to use
+	epsilon - float: max error tolerance for eigen value calculation
+	max_iter - int: maximum iterations to compute eigenvector 
+	
+	Outputs:
+	T - nxk numpy.array: the first k principal components.
+	"""
 	
 	h = cublas.cublasCreate() # create a handle to the c library
 
@@ -104,6 +110,27 @@ def CUDA_GSPCA(X, num_pcs, epsilon=0.0001, max_iter=10000):
 	return T_cpu # return the cpu data
 
 if __name__=='__main__':
-	X = np.random.rand(400,56).astype(np.float32)
+
+	from sklearn.decomposition import KernelPCA
+	from time import time
+
+	X = np.random.rand(2000,100).astype(np.float32)
+
+	t0 = time()
 	T = CUDA_GSPCA(X,4)
-	print T.shape
+	t1 = time()
+
+	t_gpu = t1-t0
+
+	pca = KernelPCA(n_components=4, n_jobs=-1)
+	
+	t2 = time()
+	T2 = pca.fit_transform(X)
+	t3 = time()
+
+	t_cpu = t3-t2
+
+	print "PCA for 2000x100, 4 components"
+	print "GPU compute time: ", t_gpu
+	print "CPU compute time: ", t_cpu
+	
