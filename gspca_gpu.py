@@ -6,48 +6,42 @@ from skcuda import cublas, misc
 #Look into http://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process for a glimpse into this method
 # Also in http://arxiv.org/pdf/0811.1081.pdf
 # run preprocessmat! before running this
-def CUDA_GSPCA(X, num_pcs, epsilon=0.0000001, max_iter=10000):
+def CUDA_GSPCA(X, num_pcs, epsilon=0.0001, max_iter=10000):
 	
 	h = cublas.cublasCreate() # create a handle to the c library
 
 	misc.init()
 
-	R = gpuarray.to_gpu(X) # move data to gpu
+	R = gpuarray.to_gpu(X) # nxp move data to gpu
 
 	n = R.shape[0] # num samples
 
 	p = R.shape[1] # num features
 
-	Lambda = gpuarray.zeros((num_pcs,1), np.float32)
+	Lambda = np.zeros((num_pcs,1), dtype=np.float32) # kx1
 
-	P = gpuarray.zeros((X.shape[1],num_pcs), np.float32)
+	P = gpuarray.zeros((p, num_pcs), np.float32) # pxk
 
-	T = gpuarray.zeros((X.shape[0],num_pcs), np.float32)
+	T = gpuarray.zeros((n, num_pcs), np.float32) # nxk
 
 
 	# mean centering data
-	U = misc.sum(R,axis=0) # sum the columns of R
-
-
+	U = gpuarray.zeros((n,1), np.float32)
+	U = misc.sum(R,axis=1) # nx1 sum the columns of R
 
 	for i in xrange(p):
 		cublas.cublasSaxpy(h, n, -1.0/p, U.gpudata, 1, R[:,i].gpudata, 1) 	
 
-	Lk = 0.0
 
 	for k in xrange(num_pcs):
 
-		print k," PC loop"
-
 		mu = 0.0
 
-		cublas.cublasDcopy(h, n, R[:,k].gpudata, 1, T[:,k].gpudata, 1)
+		cublas.cublasScopy(h, n, R[:,k].gpudata, 1, T[:,k].gpudata, 1)
 
 		for j in xrange(max_iter):
 
 		
-			print j, 'inner loop'
-	
 			cublas.cublasSgemv(h, 't', n, p, 1.0, R.gpudata, n, T[:,k].gpudata, 1, 0.0, P[:,k].gpudata, 1)
 	
 						
@@ -71,29 +65,24 @@ def CUDA_GSPCA(X, num_pcs, epsilon=0.0000001, max_iter=10000):
 
 			Lambda[k,:] = np.array([cublas.cublasSnrm2(h, n, T[:,k].gpudata, 1)], dtype=np.float32)
 
-
-			Lk = Lambda[k].get()[0]
-			cublas.cublasSscal(h, n, 1.0/Lk, T[:,k].gpudata, 1)
+			cublas.cublasSscal(h, n, 1.0/Lambda[k], T[:,k].gpudata, 1)
 		
 			
 			
 
-			if abs(Lk-mu) < epsilon:
+			if abs(Lambda[k] - mu) < epsilon:
 				break
 
-			mu = Lk
+			mu = Lambda[k]
 
 		# end for j
 
-		print 'before update R', P.gpudata, '\n'
-		cublas.cublasSger(h, n, p, (0-Lk), T[:,k].gpudata, 1, P[:,k].gpudata, 1, R.gpudata, n)
-
-		print 'after update R', P.gpudata,'\n'
+		cublas.cublasSger(h, n, p, (0-Lambda[k]), T[:,k].gpudata, 1, P[:,k].gpudata, 1, R.gpudata, n)
 
 	# end for k
 
 	for k in xrange(num_pcs):
-		cublas.cublasDscal(h, n, Lk, T[:,k].gpudata, 1) 
+		cublas.cublasSscal(h, n, Lambda[k], T[:,k].gpudata, 1) 
 
 	T_cpu = T.get()
 
