@@ -2,3 +2,4 @@
 build
 *.c
 .*.swp
+main.py
