@@ -30,9 +30,15 @@ Make sure the cloned directory is in your python path, this can be done in your 
 
 After that, simply put 
 
-`from gspca_gpu import CUDA_GSPCA`
+`from gspca_gpu import KernelPCA`
 
-in any script that you want super fast pca. Enjoy :)
+in any script that you want super fast pca.
+
+Then:
+
+
+`gpu_pca = KernelPCA(n_components=<number of components here>)
+X_reduced = gpu_pca.fit_transform(X)`
 
 
 
