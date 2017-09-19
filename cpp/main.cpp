@@ -24,9 +24,9 @@ int main(int argc, char** argv)
         // output: P, NxK loads matrix
         // output: R, MxN residual matrix
 
-        int M = 1000, m;
-        int N = M/2, n;
-        int K = 10;
+        int M = 256, m;
+        int N = 52, n;
+        int K = 4;
         printf("\nProblem dimensions: MxN=%dx%d, K=%d", M, N, K);
 
         // initialize srand and clock
@@ -38,14 +38,6 @@ int main(int argc, char** argv)
 
         // initialize cublas
         cublasStatus status;
-        status = cublasInit();
-
- 	if(status != CUBLAS_STATUS_SUCCESS)
-        {
-                fprintf(stderr, "! CUBLAS initialization error\n");
-                return EXIT_FAILURE;
-        }
-
         // initiallize some random test data X
         double *X;
 
@@ -65,32 +57,6 @@ int main(int argc, char** argv)
                 }
         }
 
-        // allocate host memory for T, P, R
-        double *T;
-        T = (double*)malloc(M*K * sizeof(T[0]));;
-
-        if(T == 0)
-        {
-                fprintf(stderr, "! host memory allocation error: T\n");
-                return EXIT_FAILURE;
-        }
-
-        double *P;
-        P = (double*)malloc(N*K * sizeof(P[0]));;
-        if(P == 0)
-        {
-                fprintf(stderr, "! host memory allocation error: P\n");
-                return EXIT_FAILURE;
-        }
-
-        double *R;
-        R = (double*)malloc(M*N * sizeof(R[0]));;
-        if(R == 0)
-        {
-                fprintf(stderr, "! host memory allocation error: R\n");
-                return EXIT_FAILURE;
-        }
-
         dtime = ((double)clock()-start)/CLOCKS_PER_SEC;
         printf("\nTime for data allocation: %f\n", dtime);
 
@@ -98,19 +64,15 @@ int main(int argc, char** argv)
 
         start=clock();
 
-        memcpy(R, X, M*N * sizeof(X[0]));
+	double *T; // results matrix
 
-        gs_pca_cuda(M, N, K, T, P, R);
+        T = gs_pca_cuda(M, N, K, X);
+ 
         dtime = ((double)clock()-start)/CLOCKS_PER_SEC;
 
         printf("\nTime for device GS-PCA computation: %f\n", dtime);
         // the results are in T, P, R
-        print_results(M, N, K, X, T, P, R);
-
-        // clean up memory
-        free(P);
-        free(T);
-        free(X);
+        //print_results(M, N, K, X, T, P, R);
 
         // shutdown
         status = cublasShutdown();

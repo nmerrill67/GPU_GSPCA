@@ -1,8 +1,7 @@
 #include "gs_pca_cuda.h"
 
 
-int gs_pca_cuda(int M, int N, int K,
-	double *T, double *P, double *R)
+double* gs_pca_cuda(int M, int N, int K, double *R)
 	{
 	// PCA model: X = TP’ + R
 	//
@@ -16,7 +15,18 @@ int gs_pca_cuda(int M, int N, int K,
 	// output: T, MxK scores matrix
 	// output: P, NxK loads matrix
 	// output: R, MxN residual matrix
-	cublasStatus status;
+
+        // initialize cublas
+        cublasStatus status;
+        status = cublasInit();
+
+        if(status != CUBLAS_STATUS_SUCCESS)
+        {
+                fprintf(stderr, "! CUBLAS initialization error\n");
+                return EXIT_FAILURE;
+        }
+
+
 
 	// maximum number of iterations
 	int J = 10000;
@@ -124,22 +134,38 @@ int gs_pca_cuda(int M, int N, int K,
 		cublasDscal(M, L[k], &dT[k*M], 1);
 	}
 
+        double *T;
+        T = (double*)malloc(M*K * sizeof(T[0]));;
+
+        if(T == 0)
+        {
+                fprintf(stderr, "! host memory allocation error: T\n");
+                return EXIT_FAILURE;
+        }
+
+
 	// transfer device dT to host T
 	cublasGetMatrix (M, K, sizeof(dT[0]), dT, M, T, M);
 
-	// transfer device dP to host P
-	cublasGetMatrix (N, K, sizeof(dP[0]), dP, N, P, N);
-
-	// transfer device dR to host R
-	cublasGetMatrix (M, N, sizeof(dR[0]), dR, M, R, M);
-
 	// clean up memory
+	free(R)
 	free(L);
 	status = cublasFree(dP);
 	status = cublasFree(dT);
 	status = cublasFree(dR);
-	return EXIT_SUCCESS;
-	}
+
+        // shutdown
+        status = cublasShutdown(); 
+        if(status != CUBLAS_STATUS_SUCCESS) 
+        { 
+                fprintf (stderr, "! cublas shutdown error\n"); 
+                return EXIT_FAILURE; 
+        } 
+
+
+	return T;
+
+}
 
 
 
