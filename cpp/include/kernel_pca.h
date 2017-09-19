@@ -10,8 +10,10 @@
 // includes, cuda
 #include <cublas.h>
 
+
 // matrix indexing convention
-#define id(m, n, ld) (((n) * (ld) + (m)))
+#define ind(m, n, ld) (((n) * (ld) + (m)))
+
 
 
 class KernelPCA 
@@ -19,6 +21,7 @@ class KernelPCA
 
 private:
 int K;
+cublasStatus status;
 
 public:
 KernelPCA(int K);
@@ -36,6 +39,6 @@ KernelPCA(int K);
 double* fit_transform(int M, int N, double *X);
 
 
-}
+};
 
 

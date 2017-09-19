@@ -1,4 +1,4 @@
-#include "gs_pca_cuda.h"
+#include "kernel_pca.h"
 
 // main
 int main(int argc, char** argv)
@@ -53,7 +53,7 @@ int main(int argc, char** argv)
         {
                 for(n = 0; n < N; n++)
                 {
-                X[id(m, n, M)] = rand() / (double)RAND_MAX;
+                X[ind(m, n, M)] = rand() / (double)RAND_MAX;
                 }
         }
 
@@ -64,10 +64,18 @@ int main(int argc, char** argv)
 
         start=clock();
 
+	KernelPCA* pca;
+
+	pca = new KernelPCA(K);
+
 	double *T; // results matrix
 
-        T = gs_pca_cuda(M, N, K, X);
+	// X is freed in the function
+
+        T = pca->fit_transform(M, N, X);
  
+	delete pca;
+
         dtime = ((double)clock()-start)/CLOCKS_PER_SEC;
 
         printf("\nTime for device GS-PCA computation: %f\n", dtime);

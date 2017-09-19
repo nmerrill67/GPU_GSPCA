@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(gs_pca_cuda)
+project(kernel_pca)
 
 set(CMAKE_BUILD_TYPE RELEASE)
 
@@ -39,16 +39,16 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/include
 	${CUDA_INCLUDE_DIRECTORIES}
 )
-cuda_add_library(gs_pca_cuda
+cuda_add_library(kernel_pca
 	${CUDA_FILES}
 )
 
 
-CUDA_ADD_CUBLAS_TO_TARGET(gs_pca_cuda ${CUDA_FILES})
+CUDA_ADD_CUBLAS_TO_TARGET(kernel_pca ${CUDA_FILES})
 
-CUDA_COMPILE(gs_pca_cuda ${CUDA_FILES})
+CUDA_COMPILE(kernel_pca ${CUDA_FILES})
 
-target_link_libraries(gs_pca_cuda
+target_link_libraries(kernel_pca
 	cuda
 )
 
@@ -57,7 +57,7 @@ target_link_libraries(gs_pca_cuda
 add_executable(main ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
 
 target_link_libraries(main 
-	gs_pca_cuda
+	kernel_pca
 )
 
 CUDA_ADD_CUBLAS_TO_TARGET(main ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
