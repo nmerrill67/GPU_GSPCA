@@ -150,7 +150,6 @@ double* KernelPCA::fit_transform(int M, int N, double *R)
 	status = cublasFree(dT);
 	status = cublasFree(dR);
 
-
 	return T;
 
 }

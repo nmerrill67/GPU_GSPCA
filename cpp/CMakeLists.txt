@@ -52,15 +52,22 @@ target_link_libraries(kernel_pca
 	cuda
 )
 
+### Example compilation ################
+
+find_package(GSL REQUIRED)
 
 # COMPILE AND LINK
 add_executable(main ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
 
-target_link_libraries(main 
-	kernel_pca
+include_directories(
+	${GSL_INCLUDE_DIRS}
 )
 
-CUDA_ADD_CUBLAS_TO_TARGET(main ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
+target_link_libraries(main 
+	kernel_pca
+	${GSL_LIBRARIES}
+)
+
 
 
 

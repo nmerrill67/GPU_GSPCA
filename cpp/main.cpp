@@ -1,4 +1,9 @@
 #include "kernel_pca.h"
+// includes, GSL & CBLAS
+#include <gsl/gsl_vector.h>
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_blas.h>
+
 
 // main
 int main(int argc, char** argv)
@@ -37,7 +42,6 @@ int main(int argc, char** argv)
         double dtime;
 
         // initialize cublas
-        cublasStatus status;
         // initiallize some random test data X
         double *X;
 
@@ -53,15 +57,14 @@ int main(int argc, char** argv)
         {
                 for(n = 0; n < N; n++)
                 {
-                X[ind(m, n, M)] = rand() / (double)RAND_MAX;
+        	        X[ind(m, n, M)] = rand() / (double)RAND_MAX;
                 }
         }
 
         dtime = ((double)clock()-start)/CLOCKS_PER_SEC;
         printf("\nTime for data allocation: %f\n", dtime);
 
-        // call gs_pca_cublas
-
+      
         start=clock();
 
 	KernelPCA* pca;
@@ -79,16 +82,28 @@ int main(int argc, char** argv)
         dtime = ((double)clock()-start)/CLOCKS_PER_SEC;
 
         printf("\nTime for device GS-PCA computation: %f\n", dtime);
-        // the results are in T, P, R
-        //print_results(M, N, K, X, T, P, R);
 
-        // shutdown
-        status = cublasShutdown();
-        if(status != CUBLAS_STATUS_SUCCESS)
-        {
-                fprintf (stderr, "! cublas shutdown error\n");
-                return EXIT_FAILURE;
-        }
+	// check  that the bases are orthagonal
+	gsl_matrix *T_mat = gsl_matrix_alloc(M, K);
+
+	for (m=0; m<M; m++)
+	{
+		for (n=0; n<K; n++)
+		{
+			gsl_matrix_set(T_mat, m, n, T[m*n]);
+		}
+	}
+	
+	double dot_product;
+	const gsl_vector T0 = gsl_matrix_column(T_mat, 0).vector;
+	const gsl_vector T1 = gsl_matrix_column(T_mat, 1).vector;
+
+	int gsl_status;
+	gsl_status = gsl_blas_ddot(&T0, &T1, &dot_product);
+
+	
+
+	printf("\n T0 . T1 = %f\n", dot_product); // Should be ~ 0	
 
         if(argc <= 1 || strcmp(argv[1], "-noprompt"))
         {
