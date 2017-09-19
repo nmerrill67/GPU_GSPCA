@@ -5,7 +5,9 @@ Uses skcuda's cublas wrappers to implement GPU version stated in http://arxiv.or
 
 This python library was translated from the c code in the paper, and uses many of the same cublas functions as the paper, except with the python wrappers supplied by skcuda.
 
+## Warning
 
+This code currently has a bug. The columns of T are not currently orthogonal, as eigenvectors should be.
 
 ## Requirements:
 

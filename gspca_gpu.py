@@ -7,13 +7,14 @@ from skcuda import cublas, misc
 class KernelPCA():
 
 	
-	def __init__(self, n_components=None, epsilon=0.00001, max_iter=10000):
+	def __init__(self, n_components=None, epsilon=0.0000001, max_iter=10000):
 		
 		self.n_components = n_components
 		self.epsilon = epsilon
 		self.max_iter = max_iter	
 		misc.init()
-		
+	
+		self.h = cublas.cublasCreate() # create a handle to initialize cublas
 
 	def fit_transform(self, X):
 
@@ -36,7 +37,6 @@ class KernelPCA():
 		T - nxk numpy.array: the first k principal components.
 		"""
 	
-		self.h = cublas.cublasCreate() # create a handle to initialize cublas
 
 		R = gpuarray.to_gpu(X) # nxp move data to gpu
 
@@ -81,7 +81,7 @@ class KernelPCA():
 
 					cublas.cublasSgemv(self.h,'t', p, k, 1.0, P.gpudata, p, P[:,k].gpudata, 1, 0.0, U.gpudata, 1)  
 
-					cublas.cublasSgemv (self.h, 'n', p, k, -1.0, P.gpudata, p, U.gpudata, 1, 1.0, P[:,k].gpudata, 1)
+					cublas.cublasSgemv (self.h, 'n', p, k, 0.0-1.0, P.gpudata, p, U.gpudata, 1, 1.0, P[:,k].gpudata, 1)
 
 
 				l2 = cublas.cublasSnrm2(self.h, p, P[:,k].gpudata, 1)
@@ -92,42 +92,41 @@ class KernelPCA():
 				if k > 0:
 
 					cublas.cublasSgemv(self.h, 't', n, k, 1.0, T.gpudata, n, T[:,k].gpudata, 1, 0.0, U.gpudata, 1)
-					cublas.cublasSgemv (self.h, 'n', n, k, -1.0, T.gpudata, n, U.gpudata, 1, 1.0, T[:,k].gpudata, 1)
+					cublas.cublasSgemv(self.h, 'n', n, k, 0.0-1.0, T.gpudata, n, U.gpudata, 1, 1.0, T[:,k].gpudata, 1)
 			
 
-				Lambda[k,:] = np.array([cublas.cublasSnrm2(self.h, n, T[:,k].gpudata, 1)], dtype=np.float32)
+				Lambda[k] = cublas.cublasSnrm2(self.h, n, T[:,k].gpudata, 1)
 
 				cublas.cublasSscal(self.h, n, 1.0/Lambda[k], T[:,k].gpudata, 1)
-			
-				
-				
+							
 
-				if abs(Lambda[k] - mu) < self.epsilon:
+				if abs(Lambda[k] - mu) < self.epsilon*Lambda[k]:
 					break
+
+				if j==self.max_iter-1:
+					print "max_iter reached"
 
 				mu = Lambda[k]
 
 			# end for j
 
-			cublas.cublasSger(self.h, n, p, (0-Lambda[k]), T[:,k].gpudata, 1, P[:,k].gpudata, 1, R.gpudata, n)
+			cublas.cublasSger(self.h, n, p, (0.0-Lambda[k]), T[:,k].gpudata, 1, P[:,k].gpudata, 1, R.gpudata, n)
 
 		# end for k
 
 		for k in xrange(n_components):
 			cublas.cublasSscal(self.h, n, Lambda[k], T[:,k].gpudata, 1) 
 
-		T_cpu = T.get()
-
-		return T_cpu # return the cpu data
+		return T.get() # return the cpu data
 
 if __name__=='__main__':
 
 	from sklearn.decomposition import KernelPCA as KernelPCA_cpu
 	from time import time
 
-	X = np.random.rand(20000,19000).astype(np.float32)
+	X = np.random.rand(2000,100).astype(np.float32)
 
-	pca_gpu = KernelPCA(n_components=174)
+	pca_gpu = KernelPCA(n_components=4)
 
 	t0 = time()
 	T = pca_gpu.fit_transform(X)
@@ -135,8 +134,8 @@ if __name__=='__main__':
 
 	print "gpu pca done"
 
-	print "GPU compute time: ", t_gpu
-	
+	#	print "GPU compute time: ", t_gpu
+	"""	
 	t_gpu = t1-t0
 
 	pca_cpu = KernelPCA_cpu(n_components=174, n_jobs=-1)
@@ -150,5 +149,5 @@ if __name__=='__main__':
 	print "PCA for 2000x100, 4 components"
 	print "CPU compute time: ", t_cpu
 
-
+	"""
 
