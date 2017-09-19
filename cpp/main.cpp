@@ -40,7 +40,7 @@ int main(int argc, char** argv)
         cublasStatus status;
         status = cublasInit();
 
- if(status != CUBLAS_STATUS_SUCCESS)
+ 	if(status != CUBLAS_STATUS_SUCCESS)
         {
                 fprintf(stderr, "! CUBLAS initialization error\n");
                 return EXIT_FAILURE;
@@ -100,7 +100,7 @@ int main(int argc, char** argv)
 
         memcpy(R, X, M*N * sizeof(X[0]));
 
-        gs_pca_cublas(M, N, K, T, P, R);
+        gs_pca_cuda(M, N, K, T, P, R);
         dtime = ((double)clock()-start)/CLOCKS_PER_SEC;
 
         printf("\nTime for device GS-PCA computation: %f\n", dtime);

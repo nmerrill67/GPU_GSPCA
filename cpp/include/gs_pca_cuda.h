@@ -16,6 +16,6 @@
 
 
 // declarations
-int gs_pca_cublas(int, int, int, double *, double *, double *);
+int gs_pca_cuda(int, int, int, double *, double *, double *);
 int print_results(int, int, int, double *, double *, double *, double *);
 
