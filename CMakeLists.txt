@@ -47,6 +47,35 @@ target_link_libraries(kernel_pca
 )
 
 
+
+#### Python wrapper ############################
+
+find_package( PythonLibs REQUIRED )
+
+find_package( Boost COMPONENTS python REQUIRED )
+
+execute_process( COMMAND export CPLUS_INCLUDE_PATH="$CPLUS_INCLUDE_PATH:/usr/include/python2.7/" )
+
+include_directories(
+	${CMAKE_CURRENT_SOURCE_DIR}/include
+	${Python_INCLUDE_DIRS}
+	${Boost_INCLUDE_DIR}
+)
+
+add_library(pca 
+	${CMAKE_CURRENT_SOURCE_DIR}/src/kernel_pca_pywrap.cpp
+)
+
+target_link_libraries(pca
+	kernel_pca
+	${Boost_LIBRARIES}
+	${Python_LIBRARIES}
+)
+
+# don't prepend wrapper library name with lib
+set_target_properties( pca PROPERTIES PREFIX "" )
+
+
 ### Example compilation ################
 
 find_package(GSL REQUIRED)
@@ -55,7 +84,6 @@ find_package(GSL REQUIRED)
 add_executable(main ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 
 include_directories(
-	${CMAKE_CURRENT_SOURCE_DIR}/include
 	${GSL_INCLUDE_DIRS}
 )
 
@@ -63,6 +91,17 @@ target_link_libraries(main
 	kernel_pca
 	${GSL_LIBRARIES}
 )
+
+
+
+
+
+
+
+
+
+
+
 
 
 
