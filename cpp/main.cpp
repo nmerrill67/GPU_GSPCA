@@ -29,23 +29,19 @@ int main(int argc, char** argv)
         // output: P, NxK loads matrix
         // output: R, MxN residual matrix
 
-        int M = 256, m;
-        int N = 52, n;
-        int K = 4;
+        int M = 2000, m;
+        int N = 100, n;
+        int K = 12;
         printf("\nProblem dimensions: MxN=%dx%d, K=%d", M, N, K);
 
         // initialize srand and clock
 
         srand (time(NULL));
 
-        clock_t start=clock();
-        double dtime;
-
-        // initialize cublas
         // initiallize some random test data X
-        double *X;
+        float *X;
 
-        X = (double*)malloc(M*N * sizeof(X[0]));
+        X = (float*)malloc(M*N * sizeof(X[0]));
 
         if(X == 0)
         {
@@ -61,47 +57,53 @@ int main(int argc, char** argv)
                 }
         }
 
-        dtime = ((double)clock()-start)/CLOCKS_PER_SEC;
-        printf("\nTime for data allocation: %f\n", dtime);
+        double dtime;
+	clock_t start;
 
-      
-        start=clock();
-
+	start = clock();
+	
 	KernelPCA* pca;
 
 	pca = new KernelPCA(K);
 
-	double *T; // results matrix
+	float *T; // results matrix
+
+        dtime = ((double)clock()-start)/CLOCKS_PER_SEC;
+
+        printf("\nTime for cublas initialization: %f\n", dtime);
+
 
 	// X is freed in the function
 
+        start=clock();
+  
         T = pca->fit_transform(M, N, X);
  
-	delete pca;
-
         dtime = ((double)clock()-start)/CLOCKS_PER_SEC;
 
         printf("\nTime for device GS-PCA computation: %f\n", dtime);
 
+	delete pca;
+
 	// check  that the bases are orthagonal
-	gsl_matrix *T_mat = gsl_matrix_alloc(M, K);
+	gsl_matrix_float* T_mat = gsl_matrix_float_alloc(M, K);
 
 	for (m=0; m<M; m++)
 	{
 		for (n=0; n<K; n++)
 		{
-			gsl_matrix_set(T_mat, m, n, T[m*n]);
+			gsl_matrix_float_set(T_mat, m, n, T[ind(m,n,M)]);
 		}
 	}
 	
-	double dot_product;
-	const gsl_vector T0 = gsl_matrix_column(T_mat, 0).vector;
-	const gsl_vector T1 = gsl_matrix_column(T_mat, 1).vector;
+	float dot_product;
+	const gsl_vector_float T0 = gsl_matrix_float_column(T_mat, 0).vector;
+	const gsl_vector_float T1 = gsl_matrix_float_column(T_mat, 1).vector;
 
 	int gsl_status;
-	gsl_status = gsl_blas_ddot(&T0, &T1, &dot_product);
+	gsl_status = gsl_blas_sdot(&T0, &T1, &dot_product);
 
-	
+	gsl_matrix_float_free(T_mat);
 
 	printf("\n T0 . T1 = %f\n", dot_product); // Should be ~ 0	
 

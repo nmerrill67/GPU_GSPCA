@@ -36,7 +36,7 @@ KernelPCA(int K);
  T: double* - host pointer to transformed matrix
 */
 
-double* fit_transform(int M, int N, double *X);
+float* fit_transform(int M, int N, float *X);
 
 
 };
