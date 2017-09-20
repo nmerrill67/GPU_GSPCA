@@ -36,6 +36,13 @@ float* KernelPCA::fit_transform(int M, int N, float *R)
 
 	// max error
 	float er = 1.0e-7;
+
+        // if no K specified, or K > min(M, N)
+        int K_;
+        K_ = min(M, N);
+        if (K == -1 || K > K_) K = K_;
+
+
 	int n, j, k;
 
 	// transfer the host matrix X to device matrix dR

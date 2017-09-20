@@ -14,6 +14,11 @@
 // matrix indexing convention
 #define ind(m, n, ld) (((n) * (ld) + (m)))
 
+// useful macro
+#define __min__(a,b) \
+   ({ __typeof__ (a) _a = (a); \
+       __typeof__ (b) _b = (b); \
+     _a < _b ? _a : _b; })
 
 
 class KernelPCA 

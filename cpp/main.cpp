@@ -83,6 +83,8 @@ int main(int argc, char** argv)
 
         printf("\nTime for device GS-PCA computation: %f\n", dtime);
 
+
+
 	delete pca;
 
 	// check  that the bases are orthagonal
