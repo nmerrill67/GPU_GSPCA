@@ -22,9 +22,6 @@ set(CUDA_PROPAGATE_HOST_FLAGS OFF)
 
 SET(CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc")
 
-# COMPILE CU FILES
-file(GLOB CUDA_FILES "src/" *.cu)
-
 set(CUDA_ARCH "sm_50")
 
 
@@ -35,31 +32,30 @@ cuda_include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/include
 	${CUDA_INCLUDE_DIRECTORIES}
 )
-include_directories(
-	${CMAKE_CURRENT_SOURCE_DIR}/include
-	${CUDA_INCLUDE_DIRECTORIES}
-)
+
 cuda_add_library(kernel_pca
-	${CUDA_FILES}
+	${CMAKE_CURRENT_SOURCE_DIR}/src/kernel_pca.cu
 )
 
 
-CUDA_ADD_CUBLAS_TO_TARGET(kernel_pca ${CUDA_FILES})
+CUDA_ADD_CUBLAS_TO_TARGET(kernel_pca ${CMAKE_CURRENT_SOURCE_DIR}/src/kernel_pca.cu)
 
-CUDA_COMPILE(kernel_pca ${CUDA_FILES})
+CUDA_COMPILE(kernel_pca ${CMAKE_CURRENT_SOURCE_DIR}/src/kernel_pca.cu)
 
 target_link_libraries(kernel_pca
 	cuda
 )
+
 
 ### Example compilation ################
 
 find_package(GSL REQUIRED)
 
 # COMPILE AND LINK
-add_executable(main ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
+add_executable(main ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 
 include_directories(
+	${CMAKE_CURRENT_SOURCE_DIR}/include
 	${GSL_INCLUDE_DIRS}
 )
 

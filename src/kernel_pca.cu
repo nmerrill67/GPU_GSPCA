@@ -28,6 +28,11 @@ KernelPCA::~KernelPCA()
 
 }
 
+void KernelPCA::set_n_components(int K_)
+{
+	K = K_;
+}
+
 float* KernelPCA::fit_transform(int M, int N, float *R)
 {
 
@@ -156,6 +161,7 @@ float* KernelPCA::fit_transform(int M, int N, float *R)
 	status = cublasFree(dP);
 	status = cublasFree(dT);
 	status = cublasFree(dR);
+	status = cublasFree(dU);
 
 	return T;
 

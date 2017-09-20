@@ -3,8 +3,8 @@
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_blas.h>
-
-
+#include <string>
+#include <iostream>
 // main
 int main(int argc, char** argv)
 {
@@ -90,13 +90,19 @@ int main(int argc, char** argv)
 	// check  that the bases are orthagonal
 	gsl_matrix_float* T_mat = gsl_matrix_float_alloc(M, K);
 
+	std::string T_string;
+
 	for (m=0; m<M; m++)
 	{
 		for (n=0; n<K; n++)
 		{
 			gsl_matrix_float_set(T_mat, m, n, T[ind(m,n,M)]);
+			T_string += std::to_string(T[ind(m,n,M)]) + ", ";
 		}
+		T_string += "\n";
 	}
+
+	// std::cout << "T:\n\n" << T_string << "\n\n";
 	
 	float dot_product;
 	const gsl_vector_float T0 = gsl_matrix_float_column(T_mat, 0).vector;

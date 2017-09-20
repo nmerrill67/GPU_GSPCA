@@ -31,14 +31,31 @@ cublasStatus status;
 public:
 KernelPCA(int K);
 ~KernelPCA();
+
 /*
+ Change the number of components after intitialization
+
+ input: 
+ K_: int - new number of components
+
+ return:
+ void
+*/
+void set_n_components(int K_);
+
+
+/*
+ Fit a PCA model to the data matrix X, and return the principal components T. The memory for X is freed in the function. 
+ 
+
+
  input
- X: double* - host pointer to data matrix 
+ X: float* - host pointer to data array. The array represents an MxN matrix, where each M elements of X is the ith column of the matrix.
  M: int - number of rows (samples) in X
  N: int - number of columns (features) in X
 
  return
- T: double* - host pointer to transformed matrix
+ T: float* - host pointer to transformed matrix, with the same indexing as X
 */
 
 float* fit_transform(int M, int N, float *X);
