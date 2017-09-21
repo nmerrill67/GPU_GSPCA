@@ -2,9 +2,10 @@
 
 void PyKernelPCA::CheckNpArray(PyArrayObject* arr)
 {
+	/*
 	if (!(PyArray_FLAGS(arr) & NPY_ARRAY_F_CONTIGUOUS)) 
     		throw std::runtime_error("numpy array must be Fortran contiguous (column-major). Try numpy.asfortranarray.");
-  	
+  	*/
   	if (PyArray_TYPE(arr) != NPY_FLOAT32) 
     		throw std::runtime_error("numpy array must be of type float32");
   
@@ -12,20 +13,25 @@ void PyKernelPCA::CheckNpArray(PyArrayObject* arr)
   		throw std::runtime_error("numpy array must be 2 dimensional for PCA");
 }
 
-PyKernelPCA::PyKernelPCA(int num_pcs=-1) : KernelPCA::KernelPCA(num_pcs){}
+PyKernelPCA::PyKernelPCA(int n_components=-1) : KernelPCA::KernelPCA(n_components){}
  
 
 
-
-
-
-PyArrayObject* PyKernelPCA::fit_transform(PyArrayObject* R)
+PyArrayObject* PyKernelPCA::fit_transform(PyArrayObject* R_)
 {
 
 	
+	CheckNpArray(R_);
 
+	float* R; // C array from numpy array
+	R = (float*)PyArray_GetPtr(R_, (npy_intp*) 0); // This macro (or is it a function?) returns a void*, so just cast it to float* inplace
 
-	return R;
+	int M;
+	M = PyArray_DIMS(R_)[0]; // first dimension of array	
+
+	int dims[2] = {M, get_n_components()};
+	
+	return (PyArrayObject*)PyArray_SimpleNewFromData(2, (npy_intp*)dims, NPY_FLOAT32, (void*)R) ;
 
 }
 
@@ -36,7 +42,16 @@ void PyKernelPCA::set_n_components(int K_)
 
 }
 
-BOOST_PYTHON_MODULE(kernel_pca) 
+
+int PyKernelPCA::get_n_components()
+{
+	return KernelPCA::get_n_components();
+}
+
+
+// Use boosts' macro to make the python module "kernel_pca_pywrap"
+// This wraps the PyKernelPCA class, which extends the KernelPCA class to be able to accept numpy arrays as input, and return numpy arrays from fit_transform
+BOOST_PYTHON_MODULE(py_kernel_pca) 
 {
 
 	boost::python::class_<PyKernelPCA>("KernelPCA",

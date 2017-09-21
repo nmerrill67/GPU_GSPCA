@@ -60,7 +60,7 @@ float* fit_transform(int M, int N, float *X);
 */
 void set_n_components(int K_);
 
-
+int get_n_components();
 
 };
 

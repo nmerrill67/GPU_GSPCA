@@ -1,3 +1,4 @@
+#include <Python.h>
 #include <boost/python.hpp>
 #include <numpy/arrayobject.h>
 
@@ -16,7 +17,7 @@ void CheckNpArray(PyArrayObject* arr);
 public:
 
 
-PyKernelPCA(int num_pcs); 
+PyKernelPCA(int n_components);
 
 // overload KernelPCA::fit_transform
 PyArrayObject* fit_transform(PyArrayObject* R);
@@ -24,7 +25,7 @@ PyArrayObject* fit_transform(PyArrayObject* R);
 // get access to set_n_components
 void set_n_components(int K_);
 
-
+int get_n_components();
 
 
 

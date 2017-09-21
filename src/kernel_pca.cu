@@ -46,7 +46,7 @@ float* KernelPCA::fit_transform(int M, int N, float *R)
 
 	int n, j, k;
 
-	// transfer the host matrix X to device matrix dR
+	// transfer the host matrix R to device matrix dR
 	float *dR = 0;
 	status = cublasAlloc(M*N, sizeof(dR[0]), (void**)&dR);
 
@@ -171,3 +171,12 @@ void KernelPCA::set_n_components(int K_)
 {
 	K = K_;
 }
+
+
+int KernelPCA::get_n_components()
+{
+	return K;
+}
+
+
+
