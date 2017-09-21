@@ -48,7 +48,7 @@ target_link_libraries(kernel_pca
 
 #### Python wrapper ############################
 
-find_package( PythonLibs REQUIRED )
+find_package( PythonLibs 2.7 REQUIRED )
 
 find_package( Boost COMPONENTS python REQUIRED )
 

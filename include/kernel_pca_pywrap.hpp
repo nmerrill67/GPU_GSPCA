@@ -5,6 +5,8 @@
 #include "kernel_pca.h"
 
 
+
+
 // Python wrapper class for KernelPCA
 class PyKernelPCA : public KernelPCA 
 {
@@ -19,20 +21,18 @@ public:
 
 PyKernelPCA(int n_components);
 
+
+
 // overload KernelPCA::fit_transform
 PyArrayObject* fit_transform(PyArrayObject* R);
-
-// get access to set_n_components
-void set_n_components(int K_);
-
-int get_n_components();
-
 
 
 
 };
 
 
+
+boost::shared_ptr<PyKernelPCA> initWrapper(int n_components);
 
 
 
