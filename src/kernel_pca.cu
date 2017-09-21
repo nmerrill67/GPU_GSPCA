@@ -4,7 +4,7 @@
 
 
 
-KernelPCA::KernelPCA(int num_pcs=-1) : K(num_pcs)
+KernelPCA::KernelPCA(int num_pcs=-1)
 {
         // initialize cublas
         status = cublasInit();
@@ -28,10 +28,6 @@ KernelPCA::~KernelPCA()
 
 }
 
-void KernelPCA::set_n_components(int K_)
-{
-	K = K_;
-}
 
 float* KernelPCA::fit_transform(int M, int N, float *R)
 {
@@ -170,3 +166,8 @@ float* KernelPCA::fit_transform(int M, int N, float *R)
 
 
 
+
+void KernelPCA::set_n_components(int K_)
+{
+	K = K_;
+}

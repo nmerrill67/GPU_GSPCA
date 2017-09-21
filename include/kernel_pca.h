@@ -32,17 +32,6 @@ public:
 KernelPCA(int K);
 ~KernelPCA();
 
-/*
- Change the number of components after intitialization
-
- input: 
- K_: int - new number of components
-
- return:
- void
-*/
-void set_n_components(int K_);
-
 
 /*
  Fit a PCA model to the data matrix X, and return the principal components T. The memory for X is freed in the function. 
@@ -59,6 +48,18 @@ void set_n_components(int K_);
 */
 
 float* fit_transform(int M, int N, float *X);
+
+/*
+ Change the number of components after intitialization
+
+ input: 
+ K_: int - new number of components
+
+ return:
+ void
+*/
+void set_n_components(int K_);
+
 
 
 };
