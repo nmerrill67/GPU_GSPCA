@@ -44,10 +44,12 @@ PyArrayObject* PyKernelPCA::fit_transform(PyArrayObject* R_)
 }
 
 
-boost::shared_ptr<PyKernelPCA> initWrapper(int n_components=-1)
+boost::shared_ptr<PyKernelPCA> initWrapper(int* n_components)
 {
+	
+	if (!n_components) n_components = new int(-1);
 
-	boost::shared_ptr<PyKernelPCA> ptr( new PyKernelPCA(n_components) );
+	boost::shared_ptr<PyKernelPCA> ptr( new PyKernelPCA(*n_components) );
 
 	return ptr;
 
@@ -59,7 +61,7 @@ boost::shared_ptr<PyKernelPCA> initWrapper(int n_components=-1)
 BOOST_PYTHON_MODULE(py_kernel_pca) 
 {
 
-	boost::python::class_< PyKernelPCA, boost::shared_ptr< PyKernelPCA > >("KernelPCA",
+	boost::python::class_< PyKernelPCA, boost::shared_ptr< PyKernelPCA >, boost::noncopyable>("KernelPCA",
 		boost::python::no_init)
 		.def("__init__", boost::python::make_constructor(&initWrapper))
 		.def("fit_transform", &PyKernelPCA::fit_transform, boost::python::return_value_policy<boost::python::manage_new_object>())

@@ -32,7 +32,7 @@ PyArrayObject* fit_transform(PyArrayObject* R);
 
 
 
-boost::shared_ptr<PyKernelPCA> initWrapper(int n_components);
+boost::shared_ptr<PyKernelPCA> initWrapper(int* n_components);
 
 
 
