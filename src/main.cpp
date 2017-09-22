@@ -53,7 +53,7 @@ int main(int argc, char** argv)
         {
                 for(n = 0; n < N; n++)
                 {
-        	        X[ind(m, n, M)] = rand() / (double)RAND_MAX;
+        	        X[ind_f(m, n, M)] = rand() / (double)RAND_MAX;
                 }
         }
 
@@ -96,8 +96,8 @@ int main(int argc, char** argv)
 	{
 		for (n=0; n<K; n++)
 		{
-			gsl_matrix_float_set(T_mat, m, n, T[ind(m,n,M)]);
-			T_string += std::to_string(T[ind(m,n,M)]) + ", ";
+			gsl_matrix_float_set(T_mat, m, n, T[ind_f(m,n,M)]);
+			T_string += std::to_string(T[ind_f(m,n,M)]) + ", ";
 		}
 		T_string += "\n";
 	}

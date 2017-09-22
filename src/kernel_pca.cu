@@ -11,7 +11,7 @@ KernelPCA::KernelPCA(int num_pcs=-1)
 
         if(status != CUBLAS_STATUS_SUCCESS)
         {
-                std::cerr << "! CUBLAS initialization error\n";
+                std::runtime_error( "! CUBLAS initialization error\n");
         }
 }
 
@@ -22,7 +22,7 @@ KernelPCA::~KernelPCA()
         status = cublasShutdown(); 
         if(status != CUBLAS_STATUS_SUCCESS) 
         { 
-                std::cerr << "! cublas shutdown error\n"; 
+                std::runtime_error( "! cublas shutdown error\n"); 
         } 
 
 
@@ -31,6 +31,10 @@ KernelPCA::~KernelPCA()
 
 float* KernelPCA::fit_transform(int M, int N, float *R)
 {
+
+
+        std::cout << "n_comp_internal " << get_n_components() << std::endl;
+
 
 	// maximum number of iterations
 	int J = 10000;
@@ -52,13 +56,13 @@ float* KernelPCA::fit_transform(int M, int N, float *R)
 
 	if(status != CUBLAS_STATUS_SUCCESS)
 	{
-		std::cerr << "! device memory allocation error (dR)\n";
+		std::runtime_error( "! cuda memory allocation error (dR)\n");
 	}
 
 	status = cublasSetMatrix(M, N, sizeof(R[0]), R, M, dR, M);
 	if(status != CUBLAS_STATUS_SUCCESS)
 	{
-		std::cerr << "! device access error (write dR)\n";
+		std::runtime_error( "! cuda access error (write dR)\n");
 	}
 
 	// allocate device memory for T, P
@@ -66,14 +70,14 @@ float* KernelPCA::fit_transform(int M, int N, float *R)
 	status = cublasAlloc(M*K, sizeof(dT[0]), (void**)&dT);
 	if(status != CUBLAS_STATUS_SUCCESS)
 	{
-		std::cerr << "! device memory allocation error (dT)\n";
+		std::runtime_error( "! cuda memory allocation error (dT)\n");
 	}
 
 	float *dP = 0;
 	status = cublasAlloc(N*K, sizeof(dP[0]), (void**)&dP);
 	if(status != CUBLAS_STATUS_SUCCESS)
 	{
-		std::cerr << "! device memory allocation error (dP)\n";
+		std::runtime_error( "! cuda memory allocation error (dP)\n");
 	}
 
 	// allocate memory for eigenvalues
@@ -81,7 +85,7 @@ float* KernelPCA::fit_transform(int M, int N, float *R)
 	L = (float*)malloc(K * sizeof(L[0]));;
 	if(L == 0)
 	{
-		std::cerr << "! host memory allocation error: T\n";
+		std::runtime_error( "! memory allocation error: T\n");
 	}
 
 	// mean center the data
@@ -89,7 +93,7 @@ float* KernelPCA::fit_transform(int M, int N, float *R)
 	status = cublasAlloc(M, sizeof(dU[0]), (void**)&dU);
 	if(status != CUBLAS_STATUS_SUCCESS)
 	{
-		std::cerr << "! device memory allocation error (dU)\n";
+		std::runtime_error( "! cuda memory allocation error (dU)\n");
 	}
 
 	cublasScopy(M, &dR[0], 1, dU, 1);
@@ -140,11 +144,11 @@ float* KernelPCA::fit_transform(int M, int N, float *R)
 	}
 
         float *T;
-        T = (float*)malloc(M*K * sizeof(T[0]));;
+        T = (float*)malloc(M*K * sizeof(T[0]));
 
         if(T == 0)
         {
-                std::cerr << "! host memory allocation error: T\n";
+                std::runtime_error("! memory allocation error: T\n");
         }
 
 

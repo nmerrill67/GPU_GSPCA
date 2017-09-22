@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 
 project(kernel_pca)
 
-set(CMAKE_BUILD_TYPE RELEASE)
+set(CMAKE_BUILD_TYPE DEBUG)
 
 
 if (UNIX)
