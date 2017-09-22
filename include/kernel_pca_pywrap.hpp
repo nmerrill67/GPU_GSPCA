@@ -13,7 +13,7 @@ class PyKernelPCA : public KernelPCA
 
 private:
 
-void CheckNpArray(PyArrayObject* arr);
+void CheckNpArray(PyObject* arr);
 
 
 public:
@@ -24,7 +24,7 @@ PyKernelPCA(int n_components);
 
 
 // overload KernelPCA::fit_transform
-PyArrayObject* fit_transform(PyArrayObject* R);
+PyObject* fit_transform(PyObject* R);
 
 
 
@@ -32,7 +32,7 @@ PyArrayObject* fit_transform(PyArrayObject* R);
 
 
 
-boost::shared_ptr<PyKernelPCA> initWrapper(int* n_components);
+boost::shared_ptr<PyKernelPCA> initWrapper(int n_components);
 
 
 
