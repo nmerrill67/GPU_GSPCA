@@ -31,7 +31,8 @@ addons:
       - libpython2.7
       - python-numpy
       - libboost-dev
-      - libboost-python-dev			
+      - libboost-python-dev		
+      - libgsl-dev # c++ orthogonality testing only	
 script:	
   - mkdir build && cd build
   - cmake .. && make
