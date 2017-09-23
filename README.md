@@ -1,4 +1,4 @@
-# Gram-Schmidt-PCA
+# Gram-Schmidt-PCA [![Build Status](https://travis-ci.org/nmerrill67/GPU_GSPCA.svg?branch=master)](https://travis-ci.org/nmerrill67/GPU_GSPCA)
 This library implements PCA using the  GRAM-SCMIDT method, using the code written in http://arxiv.org/pdf/0811.1081.pdf as the backend for python wrappers. 
 
 This code includes the c/c++ interface as well as the python interface to run PCA on a cuda-capable gpu. It models the API of sklearn.decomposition.KernelPCA.
