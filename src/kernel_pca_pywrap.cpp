@@ -121,18 +121,6 @@ PyObject* PyKernelPCA::fit_transform(PyObject* R_)
  	T_PyArr = PyArray_SimpleNewFromData(2 /* = number of array dims */, dims, NPY_FLOAT32, reinterpret_cast<void*>(T_ret));
 	
 
-        for (m = 0; m < M; m++)
-        {
-                for (k = 0; k < K; k++)
-                {
-
-                        std::cout << T[ind_f(m, k, M)] << " ~ " << *(float*)PyArray_GETPTR2((PyArrayObject*)T_PyArr, (npy_intp)m, (npy_intp)k) << "\n";
-
-                }
-        }
-
-
-
 	return T_PyArr;
 
 }
