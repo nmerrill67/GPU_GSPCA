@@ -14,7 +14,7 @@ os:
 
 env:
   global:
-    - GH_REPO_NAME: CXXDecomQt
+    - GH_REPO_NAME: GPU_GSPCA
 
 
 
