@@ -4,7 +4,7 @@
 
 
 
-KernelPCA::KernelPCA(int num_pcs=-1)
+KernelPCA::KernelPCA(int num_pcs=-1) : K(num_pcs)
 {
         // initialize cublas
         status = cublasInit();
@@ -33,7 +33,6 @@ float* KernelPCA::fit_transform(int M, int N, float *R)
 {
 
 
-        std::cout << "n_comp_internal " << get_n_components() << std::endl;
 
 
 	// maximum number of iterations

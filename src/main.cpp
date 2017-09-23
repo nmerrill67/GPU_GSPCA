@@ -66,6 +66,9 @@ int main(int argc, char** argv)
 
 	pca = new KernelPCA(K);
 
+        std::cout << "\n\nn_comp in main " << pca->get_n_components() << std::endl;
+
+
 	float *T; // results matrix
 
         dtime = ((double)clock()-start)/CLOCKS_PER_SEC;

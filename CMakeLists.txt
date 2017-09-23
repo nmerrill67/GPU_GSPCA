@@ -46,6 +46,26 @@ target_link_libraries(kernel_pca
 
 
 
+### Example compilation ################
+
+find_package(GSL REQUIRED)
+
+# COMPILE AND LINK
+add_executable(main ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
+
+include_directories(
+	${GSL_INCLUDE_DIRS}
+)
+
+target_link_libraries(main 
+	kernel_pca
+	${GSL_LIBRARIES}
+)
+
+
+
+
+
 #### Python wrapper ############################
 
 find_package( PythonLibs 2.7 REQUIRED )
@@ -74,26 +94,6 @@ target_link_libraries(py_kernel_pca
 
 # don't prepend wrapper library name with lib
 set_target_properties( py_kernel_pca PROPERTIES PREFIX "" )
-
-
-### Example compilation ################
-
-find_package(GSL REQUIRED)
-
-# COMPILE AND LINK
-add_executable(main ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
-
-include_directories(
-	${GSL_INCLUDE_DIRS}
-)
-
-target_link_libraries(main 
-	kernel_pca
-	${GSL_LIBRARIES}
-)
-
-
-
 
 
 

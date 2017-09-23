@@ -14,7 +14,7 @@
 // This indexing macro is not used internally, but is useful for users contructing data arrays in c or c++ 
 
 // matrix indexing convention for fortran-contiguous arrays
-#define ind_f(m, n, num_rows) (((n) * (num_rows) + (m)))
+#define ind_f(m, n, num_rows) (((n) * (num_rows)) + (m))
 
 
 // useful macro
