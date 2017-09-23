@@ -32,7 +32,7 @@ addons:
       - python-numpy
       - libboost-dev
       - libboost-python-dev		
-      - libgsl-dev # c++ orthogonality testing only	
+      - libgsl0-dev # c++ orthogonality testing only	
 script:	
   - mkdir build && cd build
   - cmake .. && make
