@@ -1,0 +1,40 @@
+
+language: cpp
+sudo: required
+
+dist: xenial
+
+
+compiler:
+- gcc
+
+os:
+- linux
+
+
+env:
+  global:
+- GH_REPO_NAME: CXXDecomQt
+
+
+
+addons:
+	apt:
+    		sources:
+      			- ubuntu-toolchain-r-test
+    		packages:
+			- build-essential
+			- cmake
+			- nvidia-375
+			- nvidia-cuda-toolkit
+			- nvidia-modprobe
+			- libpython2.7
+			- python-numpy
+			- libboost-dev
+			- libboost-python-dev
+			
+script:
+	
+	mkdir build && cd build
+	cmake .. && make
+

@@ -5,12 +5,7 @@ project(kernel_pca)
 set(CMAKE_BUILD_TYPE RELEASE)
 
 
-if (UNIX)
-    set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -fPIC")
-else ()
-    set(CMAKE_CXX_FLAGS "/c /Zi /GS- /GL /W3 /Gy /Gm- /Ox /EHsc /W3 /O2 /MD")
-    set(CMAKE_EXE_LINKER_FLAGS "/LTCG /RELEASE")
-endif ()
+set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -fPIC")
 
 
 
@@ -22,7 +17,6 @@ set(CUDA_PROPAGATE_HOST_FLAGS ON)
 
 SET(CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc")
 
-set(CUDA_ARCH "sm_50")
 
 
 
@@ -72,7 +66,9 @@ find_package( PythonLibs 2.7 REQUIRED )
 
 find_package( Boost COMPONENTS python REQUIRED )
 
-execute_process( COMMAND export CPLUS_INCLUDE_PATH="$CPLUS_INCLUDE_PATH:/usr/include/python2.7/" )
+message("${PYTHON_INCLUDE_DIRS}")
+
+execute_process( COMMAND export CPLUS_INCLUDE_PATH="${PYTHON_INCLUDE_DIRS}" )
 
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/include

@@ -6,11 +6,13 @@ This code includes the c/c++ interface as well as the python interface to run PC
 Only fit_transform is implemented, so the pca model cannot be used between different datasets. However, this is not very imortant since the compute time for a model on the gpu is orders of magnitude less thaton the cpu using sklearn.  
 
 ## Requirements:
+- UNIX machine 
 - cmake
 - gcc, g++
 - cuda-capable gpu 
 - nvidia drivers and cuda installed
-- python
+- boost and boost python
+- python 2.7 
 - numpy
 - sklearn (for demo comparison to cpu pca implementation only)
 
