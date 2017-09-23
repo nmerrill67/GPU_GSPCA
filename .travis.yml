@@ -2,7 +2,7 @@
 language: cpp
 sudo: required
 
-dist: xenial
+dist: trusty
 
 
 compiler:
@@ -33,6 +33,6 @@ addons:
       - libboost-dev
       - libboost-python-dev			
 script:	
-  mkdir build && cd build
-  cmake .. && make
+  - mkdir build && cd build
+  - cmake .. && make
 
