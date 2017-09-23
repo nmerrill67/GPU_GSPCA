@@ -6,16 +6,16 @@ dist: xenial
 
 
 compiler:
-- gcc
+  - gcc
 
 os:
-- linux
+  - linux
 
 
 env:
   global:
     - GH_REPO_NAME: GPU_GSPCA
-
+    - GH_REPO_REF: https://github.com/nmerrill67/GPU_GSPCA.git
 
 
 addons:
