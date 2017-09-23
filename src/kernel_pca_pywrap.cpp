@@ -28,17 +28,17 @@ void PyKernelPCA::CheckNpArray(PyObject* arr)
 PyKernelPCA::PyKernelPCA(int n_components) : KernelPCA::KernelPCA(n_components){}
  
 
-boost::python::object PyKernelPCA::fit_transform(boost::python::object R_)
+PyObject* PyKernelPCA::fit_transform(PyObject* R_)
 {
 
 
-	CheckNpArray(R_.ptr()); // check: is the input array c-coontiguous, is it float32 type and also is it 2D
+	CheckNpArray(R_); // check: is the input array c-coontiguous, is it float32 type and also is it 2D
 
 
 
 	int M, N;
-	M = PyArray_DIMS(R_.ptr())[0]; // first dimension of array	
-	N = PyArray_DIMS(R_.ptr())[1]; 
+	M = PyArray_DIMS(R_)[0]; // first dimension of array	
+	N = PyArray_DIMS(R_)[1]; 
 
 
 	float* R; // C array from numpy array
@@ -50,12 +50,12 @@ boost::python::object PyKernelPCA::fit_transform(boost::python::object R_)
 	}
 	
 
-	npy_intp* strides  = PyArray_STRIDES(R_.ptr()); // strides for data gaps
+	npy_intp* strides  = PyArray_STRIDES(R_); // strides for data gaps
 	int s0, s1;
 	s0 = strides[0]; s1 = strides[1];
 
 
-	char* R_data = (char*)PyArray_DATA(R_.ptr());
+	char* R_data = (char*)PyArray_DATA(R_);
 
 	
 
@@ -68,7 +68,7 @@ boost::python::object PyKernelPCA::fit_transform(boost::python::object R_)
 		}	
 	}	
 
-	Py_DECREF(R_.ptr());
+	Py_DECREF(R_);
 
 
 	float* T;
@@ -81,6 +81,8 @@ boost::python::object PyKernelPCA::fit_transform(boost::python::object R_)
 	K =  KernelPCA::get_n_components();
 
 	// SimpleNewFromData can only handle a c-contiguous array, so convert T to c contiguous
+
+	/*
 	float **T_ret; // there is no way to do this without making a copy (I think)
 	T_ret = (float**)malloc(M * sizeof(T_ret[0]));
 
@@ -93,6 +95,10 @@ boost::python::object PyKernelPCA::fit_transform(boost::python::object R_)
 	{
 		throw std::runtime_error("Cannot allocate memory for C-contiguous array");
 	}
+	*/
+
+	float* T_ret;
+	T_ret = (float*)malloc(M*K * sizeof(T_ret[0]));
 
 	// switch back to C contiguous for numpy
 	for (m = 0; m < M; m++)
@@ -100,12 +106,12 @@ boost::python::object PyKernelPCA::fit_transform(boost::python::object R_)
 		for (k = 0; k < K; k++)
 		{
 
-			T_ret[m][k] = T[ind_f(m, k, M)];
+			T_ret[ind_c(m,k,K)] = T[ind_f(m, k, M)];
 
 		}	
 	}
 	
-	free(T);
+	//free(T);
  	
 	
 	npy_intp dims[2] = {M,K};
@@ -115,9 +121,19 @@ boost::python::object PyKernelPCA::fit_transform(boost::python::object R_)
  	T_PyArr = PyArray_SimpleNewFromData(2 /* = number of array dims */, dims, NPY_FLOAT32, reinterpret_cast<void*>(T_ret));
 	
 
-	boost::python::handle<> handle(T_PyArr);
-	boost::python::numeric::array arr(handle);
-	return arr.copy();
+        for (m = 0; m < M; m++)
+        {
+                for (k = 0; k < K; k++)
+                {
+
+                        std::cout << T[ind_f(m, k, M)] << " ~ " << *(float*)PyArray_GETPTR2((PyArrayObject*)T_PyArr, (npy_intp)m, (npy_intp)k) << "\n";
+
+                }
+        }
+
+
+
+	return T_PyArr;
 
 }
 
