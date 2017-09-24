@@ -30,6 +30,7 @@ addons:
     packages:
       - build-essential
       - cmake
+      - nvidia-375
       - nvidia-cuda-toolkit
       - libpython2.7
       - python-numpy
