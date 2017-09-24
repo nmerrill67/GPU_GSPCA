@@ -31,6 +31,7 @@ addons:
       - build-essential
       - cmake
       - nvidia-375
+      - nvidia-modprobe
       - nvidia-cuda-toolkit
       - libpython2.7
       - python-numpy
