@@ -30,9 +30,7 @@ addons:
     packages:
       - build-essential
       - cmake
-      - nvidia-375
       - nvidia-cuda-toolkit
-      - nvidia-modprobe
       - libpython2.7
       - python-numpy
       - libboost-dev
@@ -40,5 +38,5 @@ addons:
       - libgsl0-dev # c++ orthogonality testing only	
 script:	
   - mkdir build && cd build
-  - cmake -DCUDA_ARCH="sm_50" .. && make
+  - cmake .. && make
 
