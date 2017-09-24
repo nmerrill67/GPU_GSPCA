@@ -40,5 +40,5 @@ addons:
       - libgsl0-dev # c++ orthogonality testing only	
 script:	
   - mkdir build && cd build
-  - cmake -DCUDA_ARCH_BIN="50" .. && make
+  - cmake -DCUDA_ARCH="sm_50" .. && make
 
