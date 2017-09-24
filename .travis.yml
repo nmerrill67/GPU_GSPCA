@@ -17,6 +17,11 @@ env:
     - GH_REPO_NAME: GPU_GSPCA
     - GH_REPO_REF: https://github.com/nmerrill67/GPU_GSPCA.git
 
+notifications:
+  email:
+    on_success: never
+    on_failure: never
+
 
 addons:
   apt:
@@ -35,5 +40,5 @@ addons:
       - libgsl0-dev # c++ orthogonality testing only	
 script:	
   - mkdir build && cd build
-  - cmake .. && make
+  - cmake -DCUDA_ARCH_BIN="50" .. && make
 
