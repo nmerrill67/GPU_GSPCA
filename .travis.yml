@@ -38,7 +38,8 @@ addons:
       - libboost-dev
       - libboost-python-dev		
       - libgsl0-dev # c++ orthogonality testing only	
-script:	
+script:
+  - sudo reboot now	
   - mkdir build && cd build
   - cmake .. && make
 
