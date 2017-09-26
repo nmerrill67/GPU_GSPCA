@@ -28,6 +28,7 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
+      - wget
       - build-essential
       - cmake
       - nvidia-375
@@ -39,7 +40,12 @@ addons:
       - libboost-python-dev		
       - libgsl0-dev # c++ orthogonality testing only	
 script:
-  - sudo reboot now	
+  - sudo reboot
+  - wget https://developer.nvidia.com/compute/cuda/8.0/Prod2/local_installers/cuda-repo-ubuntu1604-8-0-local-ga2_8.0.61-1_amd64-deb
+  - sudo dpkg -i cuda-repo-ubuntu1604-9-0-local-ga2_8.0.61-1_amd64.deb
+  - sudo apt update
+  - sudo apt install cuda
+  - sudo reboot	
   - mkdir build && cd build
   - cmake .. && make
 
