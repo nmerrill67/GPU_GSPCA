@@ -24,7 +24,7 @@ PyKernelPCA(int n_components);
 
 
 // overload KernelPCA::fit_transform
-PyObject* fit_transform(PyObject* R);
+PyObject* fit_transform(PyObject* R, bool verbose);
 
 
 

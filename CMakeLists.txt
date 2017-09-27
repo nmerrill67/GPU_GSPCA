@@ -19,7 +19,19 @@ set(CUDA_PROPAGATE_HOST_FLAGS ON)
 SET(CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc")
 
 
+# Progress bar
 
+find_package(Curses REQUIRED) # progressbar is included in kernel_pca.cu, so it it needs to compile
+
+include_directories(	
+	${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+add_library(progressbar SHARED
+	 ${CMAKE_CURRENT_SOURCE_DIR}/src/progressbar.c
+)
+
+target_link_libraries(progressbar ${CURSES_LIBRARIES})
 
 cuda_include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -37,6 +49,7 @@ CUDA_COMPILE(kernel_pca ${CMAKE_CURRENT_SOURCE_DIR}/src/kernel_pca.cu)
 
 target_link_libraries(kernel_pca
 	cuda
+	progressbar
 )
 
 
@@ -72,7 +85,6 @@ message("${PYTHON_INCLUDE_DIRS}")
 execute_process( COMMAND export CPLUS_INCLUDE_PATH="${PYTHON_INCLUDE_DIRS}" )
 
 include_directories(
-	${CMAKE_CURRENT_SOURCE_DIR}/include
 	${PYTHON_INCLUDE_DIRS}
 	${Boost_INCLUDE_DIR}
 )

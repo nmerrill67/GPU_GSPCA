@@ -1,7 +1,6 @@
 #include "kernel_pca.h"
 #include <iostream>
-
-
+#include "progressbar.h"
 
 
 KernelPCA::KernelPCA(int num_pcs=-1) : K(num_pcs)
@@ -29,9 +28,8 @@ KernelPCA::~KernelPCA()
 }
 
 
-float* KernelPCA::fit_transform(int M, int N, float *R)
+float* KernelPCA::fit_transform(int M, int N, float *R, bool verbose)
 {
-
 
 
 
@@ -46,6 +44,10 @@ float* KernelPCA::fit_transform(int M, int N, float *R)
         K_ = min(M, N);
         if (K == -1 || K > K_) K = K_;
 
+	progressbar* progressBar;
+	if (verbose) // show a progress bar if verbose is specified
+		progressBar = progressbar_new("PCA", K); 
+		
 
 	int n, j, k;
 
@@ -132,18 +134,28 @@ float* KernelPCA::fit_transform(int M, int N, float *R)
 			cublasSscal(M, 1.0/L[k], &dT[k*M], 1);
 
 			if(fabs(a - L[k]) < er*L[k]) break;
-				a = L[k];
-			}
-	
-			cublasSger (M, N, - L[k], &dT[k*M], 1, &dP[k*N], 1, dR, M);
+			
+			a = L[k];
+			
 		}
+			
+		cublasSger (M, N, - L[k], &dT[k*M], 1, &dP[k*N], 1, dR, M);
+	
+		if (verbose)
+			progressbar_inc(progressBar);		
+	
+	}
+
+	if (verbose)
+		progressbar_finish(progressBar);
+
 	for(k=0; k<K; k++)
 	{
 		cublasSscal(M, L[k], &dT[k*M], 1);
 	}
 
         float *T;
-        T = (float*)malloc(M*K * sizeof(T[0]));
+        T = (float*)malloc(M*K * sizeof(T[0])); // user needs to free this outside this function
 
         if(T == 0)
         {

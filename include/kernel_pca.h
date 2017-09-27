@@ -45,12 +45,13 @@ KernelPCA(int K);
  X: float* - host pointer to data array. The array represents an MxN matrix, where each M elements of X is the ith column of the matrix.
  M: int - number of rows (samples) in X
  N: int - number of columns (features) in X
+ verbose: bool - whether or not to display a progress bar in the terminal. This is very useful for large Xs
 
  return
  T: float* - host pointer to transformed matrix, with the same indexing as X
 */
 
-float* fit_transform(int M, int N, float *X);
+float* fit_transform(int M, int N, float *X, bool verbose);
 
 /*
  Change the number of components after intitialization

@@ -28,7 +28,7 @@ void PyKernelPCA::CheckNpArray(PyObject* arr)
 PyKernelPCA::PyKernelPCA(int n_components) : KernelPCA::KernelPCA(n_components){}
  
 
-PyObject* PyKernelPCA::fit_transform(PyObject* R_)
+PyObject* PyKernelPCA::fit_transform(PyObject* R_, bool verbose=0)
 {
 
 
@@ -73,7 +73,7 @@ PyObject* PyKernelPCA::fit_transform(PyObject* R_)
 
 	float* T;
 		
-	T = KernelPCA::fit_transform(M, N, R); // run fit_transform on the raw float data, and put it in a float array	
+	T = KernelPCA::fit_transform(M, N, R, verbose); // run fit_transform on the raw float data, and put it in a float array	
 
 	
 	int K, m, k;
@@ -161,7 +161,7 @@ BOOST_PYTHON_MODULE(py_kernel_pca)
 	boost::python::class_< PyKernelPCA, boost::shared_ptr< PyKernelPCA >, boost::noncopyable>("KernelPCA",
 		boost::python::no_init)
 		.def("__init__", boost::python::make_constructor(&initWrapper))
-		.def("fit_transform", &PyKernelPCA::fit_transform)
+		.def("fit_transform", &PyKernelPCA::fit_transform, (boost::python::arg("verbose")=0) )
 		.def("get_n_components", &KernelPCA::get_n_components)	
 		.def("set_n_components", &KernelPCA::set_n_components)	
 	;

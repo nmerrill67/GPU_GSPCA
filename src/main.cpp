@@ -80,7 +80,7 @@ int main(int argc, char** argv)
 
         start=clock();
   
-        T = pca->fit_transform(M, N, X);
+        T = pca->fit_transform(M, N, X, 1);
  
         dtime = ((double)clock()-start)/CLOCKS_PER_SEC;
 
