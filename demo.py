@@ -4,14 +4,14 @@ from time import time
 import numpy as np
 
 
-gpu_pca = py_kernel_pca.KernelPCA(174)
+gpu_pca = py_kernel_pca.KernelPCA(4)
 
 #cpu_pca = sklearn.decomposition.KernelPCA(n_components=4)
 
 
 print "PCA for 2000x100 matrix. Computing 4 principal components\n\n"
 
-X = np.random.rand(20000,160*120)
+X = np.random.rand(2000,100)
 
 X_f = np.copy(X).astype(np.float32) # make  copy of X, otherwise T1 and T2 share the same reference. Additionally, the gpu pca currently only takes float32 type.i
 
