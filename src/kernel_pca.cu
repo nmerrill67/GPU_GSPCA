@@ -167,7 +167,6 @@ float* KernelPCA::fit_transform(int M, int N, float *R, bool verbose)
 	cublasGetMatrix (M, K, sizeof(dT[0]), dT, M, T, M);
 
 	// clean up memory
-	free(R);
 	free(L);
 	status = cublasFree(dP);
 	status = cublasFree(dT);

@@ -68,11 +68,9 @@ PyObject* PyKernelPCA::fit_transform(PyObject* R_, bool verbose=0)
 		}	
 	}	
 
-	Py_DECREF(R_);
-
 
 	float* T;
-		
+
 	T = KernelPCA::fit_transform(M, N, R, verbose); // run fit_transform on the raw float data, and put it in a float array	
 
 	
@@ -81,21 +79,6 @@ PyObject* PyKernelPCA::fit_transform(PyObject* R_, bool verbose=0)
 	K =  KernelPCA::get_n_components();
 
 	// SimpleNewFromData can only handle a c-contiguous array, so convert T to c contiguous
-
-	/*
-	float **T_ret; // there is no way to do this without making a copy (I think)
-	T_ret = (float**)malloc(M * sizeof(T_ret[0]));
-
-	for (m = 0; m < M; m++)
-	{
-		T_ret[m] = (float*)malloc(K * sizeof(T_ret[0][0]));
-	}
-
-	if (T_ret == 0)
-	{
-		throw std::runtime_error("Cannot allocate memory for C-contiguous array");
-	}
-	*/
 
 	float* T_ret;
 	T_ret = (float*)malloc(M*K * sizeof(T_ret[0]));
@@ -111,7 +94,7 @@ PyObject* PyKernelPCA::fit_transform(PyObject* R_, bool verbose=0)
 		}	
 	}
 	
-	//free(T);
+	free(T);
  	
 	
 	npy_intp dims[2] = {M,K};
@@ -129,7 +112,7 @@ PyObject* PyKernelPCA::fit_transform(PyObject* R_, bool verbose=0)
 boost::shared_ptr<PyKernelPCA> initWrapper(int n_components)
 {
 
-	if (n_components < -1) throw std::runtime_error("invalid n_components");
+	if (n_components < -1 || n_components == 0) throw std::runtime_error("Invalid n_components. Must be 0 < n_components < min matrix dimension, or n_components=-1 to return all components");
 	
 
 	boost::shared_ptr<PyKernelPCA> ptr( new PyKernelPCA(n_components) );

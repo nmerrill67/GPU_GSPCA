@@ -37,7 +37,7 @@ KernelPCA(int K);
 
 
 /*
- Fit a PCA model to the data matrix X, and return the principal components T. The memory for X is freed in the function. 
+ Fit a PCA model to the data matrix X, and return the principal components T. The memory for X is not freed in the function, so the user must do that after the call if X is no longer needed. 
  
 
 
