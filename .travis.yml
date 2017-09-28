@@ -38,13 +38,17 @@ addons:
       - libboost-dev
       - libboost-python-dev		
       - libgsl0-dev # c++ orthogonality testing only	
-script:
+
+before_install:
   - sudo reboot
   - wget https://developer.nvidia.com/compute/cuda/8.0/Prod2/local_installers/cuda-repo-ubuntu1404-8-0-local-ga2_8.0.61-1_amd64-deb # need cuda 8. Ubuntu trusty only provides 5.0
   - sudo dpkg -i cuda-repo-ubuntu1404-8-0-local-ga2_8.0.61-1_amd64-deb
   - sudo apt-get update
   - sudo apt-get install cuda
-  - sudo reboot	
+  - sudo reboot
+
+
+script:
   - mkdir build && cd build
   - cmake .. && make
 
