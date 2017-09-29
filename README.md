@@ -14,6 +14,8 @@ Only fit_transform is implemented, so the pca model cannot be used between diffe
 - UNIX machine 
 - cmake
 - gcc, g++
+- ncurses (for waitbar)
+- gnu scientific library (for c++ demo)
 - cuda-capable gpu 
 - nvidia drivers and cuda installed
 - boost and boost python
