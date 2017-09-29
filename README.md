@@ -4,7 +4,7 @@
                                                                         
 
 
-This library implements PCA using the  GRAM-SCMIDT method, using the code written in http://arxiv.org/pdf/0811.1081.pdf as the backend for python wrappers. 
+This library implements PCA using the  GRAM-SCMIDT method, using the code written in [this paper](http://arxiv.org/pdf/0811.1081.pdf) as the backend for python wrappers. 
 
 This code includes the c/c++ interface as well as the python interface to run PCA on a cuda-capable gpu. It models the API of sklearn.decomposition.KernelPCA.
 
