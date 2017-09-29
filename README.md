@@ -26,11 +26,11 @@ Only fit_transform is implemented, so the pca model cannot be used between diffe
 ## Installation
 
 In a shell:
-
-`cd /path/to/GPU_GSPCA
+```
+cd /path/to/GPU_GSPCA
 mkdir build && cd build
-cmake .. && make`
-
+cmake .. && make
+```
 
 Make sure the install directory is in your python path, this can be done in your .bashrc as 
 
