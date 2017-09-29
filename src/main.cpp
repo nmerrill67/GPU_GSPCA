@@ -39,9 +39,9 @@ int main(int argc, char** argv)
         srand (time(NULL));
 
         // initiallize some random test data X
-        float *X;
+        double *X;
 
-        X = (float*)malloc(M*N * sizeof(X[0]));
+        X = (double*)malloc(M*N * sizeof(X[0]));
 
         if(X == 0)
         {
@@ -69,7 +69,7 @@ int main(int argc, char** argv)
         std::cout << "\n\nn_comp in main " << pca->get_n_components() << std::endl;
 
 
-	float *T; // results matrix
+	double *T; // results matrix
 
         dtime = ((double)clock()-start)/CLOCKS_PER_SEC;
 
@@ -91,7 +91,7 @@ int main(int argc, char** argv)
 	delete pca;
 
 	// check  that the bases are orthagonal
-	gsl_matrix_float* T_mat = gsl_matrix_float_alloc(M, K);
+	gsl_matrix* T_mat = gsl_matrix_alloc(M, K);
 
 	std::string T_string;
 
@@ -99,7 +99,7 @@ int main(int argc, char** argv)
 	{
 		for (n=0; n<K; n++)
 		{
-			gsl_matrix_float_set(T_mat, m, n, T[ind_f(m,n,M)]);
+			gsl_matrix_set(T_mat, m, n, T[ind_f(m,n,M)]);
 			T_string += std::to_string(T[ind_f(m,n,M)]) + ", ";
 		}
 		T_string += "\n";
@@ -107,16 +107,16 @@ int main(int argc, char** argv)
 
 	// std::cout << "T:\n\n" << T_string << "\n\n";
 	
-	float dot_product;
-	const gsl_vector_float T0 = gsl_matrix_float_column(T_mat, 0).vector;
-	const gsl_vector_float T1 = gsl_matrix_float_column(T_mat, 1).vector;
+	double dot_product;
+	const gsl_vector T0 = gsl_matrix_column(T_mat, 0).vector;
+	const gsl_vector T1 = gsl_matrix_column(T_mat, 1).vector;
 
 	int gsl_status;
-	gsl_status = gsl_blas_sdot(&T0, &T1, &dot_product);
+	gsl_status = gsl_blas_ddot(&T0, &T1, &dot_product);
 
-	gsl_matrix_float_free(T_mat);
+	gsl_matrix_free(T_mat);
 
-	printf("\n T0 . T1 = %f\n", dot_product); // Should be ~ 0	
+	printf("\n T0 . T1 = %1.14f\n", dot_product); // Should be ~ 0	
 
         if(argc <= 1 || strcmp(argv[1], "-noprompt"))
         {

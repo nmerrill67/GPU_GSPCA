@@ -42,6 +42,27 @@ KernelPCA(int K);
 
 
  input
+ X: double* - host pointer to data array. The array represents an MxN matrix, where each M elements of X is the ith column of the matrix.
+ M: int - number of rows (samples) in X
+ N: int - number of columns (features) in X
+ verbose: bool - whether or not to display a progress bar in the terminal. This is very useful for large Xs
+
+ return
+ T: double* - host pointer to transformed matrix, with the same indexing as X
+*/
+
+
+double* fit_transform(int M, int N, double *X, bool verbose);
+
+
+/*
+ Overload of double-precision version.
+
+ Fit a PCA model to the data matrix X, and return the principal components T. The memory for X is not freed in the function, so the user must do that after the call if X is no longer needed. 
+ 
+
+
+ input
  X: float* - host pointer to data array. The array represents an MxN matrix, where each M elements of X is the ith column of the matrix.
  M: int - number of rows (samples) in X
  N: int - number of columns (features) in X

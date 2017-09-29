@@ -37,13 +37,37 @@ Make sure the install directory is in your python path, this can be done in your
 `export PYTHONPATH=/path/to/GPU_GSPCA/build:$PYTHONPATH`
 
 
+## Demos
+
+For c++ demo, run `./build/main`
+
+For python demo to compare to sklearn, run `python demo.py`
+
+This compares this library to sklearn's KernelPCA in speed and accuracy. In general, this library blows sklearn out of the water in both. This is what I got running the python demo:
+
+`PCA for 10000x500 matrix. Computing 4 principal components
+
+
+PCA |=================================================================================| ETA: 0h00m01s
+GPU PCA compute time =  0.786515951157
+CPU PCA compute time =  3.5805721283
+
+
+Orthogonality Test. All dot products of the resulting principal components should be ~ 0.
+This is tested by dotting the first and second largest eigenvectors (principal components) of the output for the sklearn's pca and this library's pca.
+
+
+This library's GPU PCA: T0 . T1 =  1.623e-06
+sklearns's CPU PCA: T0 . T1 =  -8.26332e-05
+`
+
 ## Library Usage
 
 `from py_kernel_pca import KernelPCA`
 
 in any script that you want super fast pca.
 
-Then, for a numpy array X:
+Then, for a numpy array X, in either single or double precision:
 
 `gpu_pca = KernelPCA(<number of components here>) # do KernelPCA(-1) to return all principal components
 X_reduced = gpu_pca.fit_transform(X)`
