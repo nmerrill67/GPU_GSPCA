@@ -58,8 +58,7 @@ This is tested by dotting the first and second largest eigenvectors (principal c
 
 
 This library's GPU PCA: T0 . T1 =  1.623e-06
-sklearns's CPU PCA: T0 . T1 =  -8.26332e-05
-`
+sklearns's CPU PCA: T0 . T1 =  -8.26332e-05`
 
 ## Library Usage
 
