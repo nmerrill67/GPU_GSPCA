@@ -13,7 +13,7 @@ class PyKernelPCA : public KernelPCA
 
 private:
 
-void CheckNpArray(PyObject* arr);
+bool CheckNpArray(PyObject* arr);
 
 
 public:

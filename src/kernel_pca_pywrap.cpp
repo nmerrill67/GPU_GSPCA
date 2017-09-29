@@ -6,107 +6,181 @@
 // indexing for c contiguous arrays. This is only used if  a numpy array is c contiguous, then it needs to be converted to fortran contiguous for KernelPCA.
 #define ind_c(m, n, num_cols) (((m) * (num_cols)) + (n))
 
-void PyKernelPCA::CheckNpArray(PyObject* arr)
+bool PyKernelPCA::CheckNpArray(PyObject* arr)
 {
 
-	if (!PyArray_IS_C_CONTIGUOUS(reinterpret_cast<PyArrayObject*>(arr)))
-	{
-		throw std::runtime_error("array must be C contiguous (did you use numpy.array.T?)");
-	}
-  	if (PyArray_TYPE(arr) != NPY_FLOAT32) 
-	{
-    		throw std::runtime_error("numpy array must be of type float32");
-	}
- 	
-  	if (PyArray_NDIM(arr) != 2)
-	{
-  		throw std::runtime_error("numpy array must be 2 dimensional for PCA");
-	}
-	
+        if (!PyArray_IS_C_CONTIGUOUS(reinterpret_cast<PyArrayObject*>(arr)))
+        {
+                throw std::runtime_error("array must be C contiguous (did you use numpy.array.T?)");
+        }
+
+        if (PyArray_NDIM(arr) != 2)
+        {
+                throw std::runtime_error("numpy array must be 2 dimensional for PCA");
+        }
+
+        switch (PyArray_TYPE(arr))
+        {
+                case NPY_FLOAT32 :
+                        return 1;
+                case NPY_FLOAT64 :
+                        return 0;
+                default :
+                        throw std::runtime_error("numpy array must be of type float32 or float64");
+        }
+ 
 }
 
+
 PyKernelPCA::PyKernelPCA(int n_components) : KernelPCA::KernelPCA(n_components){}
- 
 
 PyObject* PyKernelPCA::fit_transform(PyObject* R_, bool verbose=0)
 {
 
-
-	CheckNpArray(R_); // check: is the input array c-coontiguous, is it float32 type and also is it 2D
-
+        bool isFloat;
 
 
-	int M, N;
-	M = PyArray_DIMS(R_)[0]; // first dimension of array	
-	N = PyArray_DIMS(R_)[1]; 
+        isFloat = CheckNpArray(R_); // check: is the input array c-coontiguous, is it float32 type and also is it 2D
 
 
-	float* R; // C array from numpy array
-	
-        R = (float*)malloc(M*N * sizeof(R[0]));
-	if (R == 0)
+        int M, N;
+        M = PyArray_DIMS(R_)[0]; // first dimension of array    
+        N = PyArray_DIMS(R_)[1];
+
+        PyObject* T_PyArr;
+
+	if (isFloat)
 	{
-		throw std::runtime_error("Cannot allocate memory for C array R");
-	}
-	
 
-	npy_intp* strides  = PyArray_STRIDES(R_); // strides for data gaps
-	int s0, s1;
-	s0 = strides[0]; s1 = strides[1];
+		float* R; // C array from numpy array
 
-
-	char* R_data = (char*)PyArray_DATA(R_);
-
-	
-
-	// switch to fortran contiguous for KernelPCA, and at the same time switch to a c array from the PyObject 
-	for (int m = 0; m < M; m++)
-	{
-		for (int n = 0; n < N; n++)
+		R = (float*)malloc(M*N * sizeof(R[0]));
+		if (R == 0)
 		{
-			R[ind_f(m,n,M)] = *(float*)&R_data[ m*s0 + n*s1 ];
-		}	
+			throw std::runtime_error("Cannot allocate memory for C array R");
+		}
+
+
+		npy_intp* strides  = PyArray_STRIDES(R_); // strides for data gaps
+		int s0, s1;
+		s0 = strides[0]; s1 = strides[1];
+
+
+		char* R_data = (char*)PyArray_DATA(R_);
+
+
+
+		// switch to fortran contiguous for KernelPCA, and at the same time switch to a c array from the PyObject 
+		for (int m = 0; m < M; m++)
+		{
+			for (int n = 0; n < N; n++)
+			{
+				R[ind_f(m,n,M)] = *(float*)&R_data[ m*s0 + n*s1 ];
+			}
+		}
+
+
+		float* T;
+
+		T = KernelPCA::fit_transform(M, N, R, verbose); // run fit_transform on the raw float data, and put it in a float array 
+		int K, m, k;
+
+		K =  KernelPCA::get_n_components();
+
+		// SimpleNewFromData can only handle a c-contiguous array, so convert T to c contiguous
+
+		float* T_ret;
+		T_ret = (float*)malloc(M*K * sizeof(T_ret[0]));
+
+		// switch back to C contiguous for numpy
+		for (m = 0; m < M; m++)
+		{
+			for (k = 0; k < K; k++)
+			{
+
+				T_ret[ind_c(m,k,K)] = T[ind_f(m, k, M)];
+
+			}
+		}
+
+		free(T);
+
+		npy_intp dims[2] = {M,K};
+
+
+        	T_PyArr = PyArray_SimpleNewFromData(2 /* = number of array dims */, dims, NPY_FLOAT32, reinterpret_cast<void*>(T_ret));
+
+
+	}
+	else
+	{
+		double* R; // C array from numpy array
+
+		R = (double*)malloc(M*N * sizeof(R[0]));
+		if (R == 0)
+		{
+			throw std::runtime_error("Cannot allocate memory for C array R");
+		}
+
+
+		npy_intp* strides  = PyArray_STRIDES(R_); // strides for data gaps
+		int s0, s1;
+		s0 = strides[0]; s1 = strides[1];
+
+
+		char* R_data = (char*)PyArray_DATA(R_);
+
+
+
+		// switch to fortran contiguous for KernelPCA, and at the same time switch to a c array from the PyObject 
+		for (int m = 0; m < M; m++)
+		{
+			for (int n = 0; n < N; n++)
+			{
+				R[ind_f(m,n,M)] = *(double*)&R_data[ m*s0 + n*s1 ];
+			}
+		}
+
+
+		double* T;		
+		
+		T = KernelPCA::fit_transform(M, N, R, verbose); // run fit_transform on the raw float data, and put it in a float array 
+		
+		int K, m, k;
+
+		K =  KernelPCA::get_n_components();
+
+		// SimpleNewFromData can only handle a c-contiguous array, so convert T to c contiguous
+
+		double* T_ret;
+		T_ret = (double*)malloc(M*K * sizeof(T_ret[0]));
+
+		// switch back to C contiguous for numpy
+		for (m = 0; m < M; m++)
+		{
+			for (k = 0; k < K; k++)
+			{
+
+				T_ret[ind_c(m,k,K)] = T[ind_f(m, k, M)];
+
+			}
+		}
+
+
+		free(T);
+		npy_intp dims[2] = {M,K};
+
+
+        	T_PyArr = PyArray_SimpleNewFromData(2 /* = number of array dims */, dims, NPY_FLOAT64, reinterpret_cast<void*>(T_ret));
+
+
+
+
 	}	
-
-
-	float* T;
-
-	T = KernelPCA::fit_transform(M, N, R, verbose); // run fit_transform on the raw float data, and put it in a float array	
-
 	
-	int K, m, k;
-
-	K =  KernelPCA::get_n_components();
-
-	// SimpleNewFromData can only handle a c-contiguous array, so convert T to c contiguous
-
-	float* T_ret;
-	T_ret = (float*)malloc(M*K * sizeof(T_ret[0]));
-
-	// switch back to C contiguous for numpy
-	for (m = 0; m < M; m++)
-	{
-		for (k = 0; k < K; k++)
-		{
-
-			T_ret[ind_c(m,k,K)] = T[ind_f(m, k, M)];
-
-		}	
-	}
-	
-	free(T);
- 	
-	
-	npy_intp dims[2] = {M,K};
-
-
-	PyObject* T_PyArr;
- 	T_PyArr = PyArray_SimpleNewFromData(2 /* = number of array dims */, dims, NPY_FLOAT32, reinterpret_cast<void*>(T_ret));
-	
-
-	return T_PyArr;
-
+       	return T_PyArr;
 }
+
 
 
 boost::shared_ptr<PyKernelPCA> initWrapper(int n_components)
