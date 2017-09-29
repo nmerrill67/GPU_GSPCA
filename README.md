@@ -45,7 +45,8 @@ For python demo to compare to sklearn, run `python demo.py`
 
 This compares this library to sklearn's KernelPCA in speed and accuracy. In general, this library blows sklearn out of the water in both. This is what I got running the python demo:
 
-`PCA for 10000x500 matrix. Computing 4 principal components
+```
+PCA for 10000x500 matrix. Computing 4 principal components
 
 
 PCA |=================================================================================| ETA: 0h00m01s
@@ -58,7 +59,8 @@ This is tested by dotting the first and second largest eigenvectors (principal c
 
 
 This library's GPU PCA: T0 . T1 =  1.623e-06
-sklearns's CPU PCA: T0 . T1 =  -8.26332e-05`
+sklearns's CPU PCA: T0 . T1 =  -8.26332e-05
+```
 
 ## Library Usage
 
