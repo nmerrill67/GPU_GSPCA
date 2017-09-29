@@ -71,7 +71,7 @@ in any script that you want super fast pca.
 Then, for a numpy array X, in either single or double precision:
 
 `gpu_pca = KernelPCA(<number of components here>) # do KernelPCA(-1) to return all principal components
-X_reduced = gpu_pca.fit_transform(X)`
+X_reduced = gpu_pca.fit_transform(X, verbose=True) # verbose shows the waitbar, default is no waitbar`
 
 
 Note that X and X_reduced are numpy arrays, and lie in the host's memory. The arrays are internally copied to gpu memory and back after the computation.
