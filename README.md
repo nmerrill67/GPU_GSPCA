@@ -36,6 +36,14 @@ Make sure the install directory is in your python path, this can be done in your
 
 `export PYTHONPATH=/path/to/GPU_GSPCA/build:$PYTHONPATH`
 
+## Testing
+
+After building the library, simply run:
+
+`make test`
+
+This will run all of the unit tests. If any of them fail, please start an issue! 
+
 
 ## Demos
 
