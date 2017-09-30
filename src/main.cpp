@@ -75,12 +75,11 @@ int main(int argc, char** argv)
 
         printf("\nTime for cublas initialization: %f\n", dtime);
 
-
-	// X is freed in the function
-
         start=clock();
   
         T = pca->fit_transform(M, N, X, 1);
+
+	free(X); // need to free X ourselves. People may want to use it after running fit_transform
  
         dtime = ((double)clock()-start)/CLOCKS_PER_SEC;
 
