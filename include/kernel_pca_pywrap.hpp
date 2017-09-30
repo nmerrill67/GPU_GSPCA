@@ -26,11 +26,10 @@ PyKernelPCA(int n_components);
 // overload KernelPCA::fit_transform
 PyObject* fit_transform(PyObject* R, bool verbose);
 
-
-
 };
 
-
+// delete any unwanted py array
+void delete_arr(PyObject* arr);
 
 boost::shared_ptr<PyKernelPCA> initWrapper(int n_components);
 
