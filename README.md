@@ -8,7 +8,7 @@ This library implements PCA using the  GRAM-SCMIDT method, using the code writte
 
 This code includes the c/c++ interface as well as the python interface to run PCA on a cuda-capable gpu. It models the API of sklearn.decomposition.KernelPCA.
 
-Only fit_transform is implemented, so the pca model cannot be used between different datasets. However, this is not very imortant since the compute time for a model on the gpu is orders of magnitude less thaton the cpu using sklearn.  
+Only fit_transform is implemented, so the pca model cannot be used between different datasets. However, this is not very important since the compute time for a model on the gpu is orders of magnitude less than on the cpu using sklearn.  
 
 ## Requirements:
 - UNIX machine 
