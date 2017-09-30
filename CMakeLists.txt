@@ -11,7 +11,11 @@ message("BUID TYPE = ${CMAKE_BUILD_TYPE}")
 
 set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -fPIC")
 
-
+# colors, because why not
+string(ASCII 27 Esc)
+set(RED "${Esc}[31m")
+set(GREEN "${Esc}[32m")
+set(ENDL "${Esc}[m")
 
 # CUDA PACKAGE
 find_package(CUDA REQUIRED)
@@ -63,6 +67,9 @@ target_link_libraries(kernel_pca
 find_package(GSL QUIET)
 
 if (GSL_FOUND)
+
+	message("\n\n\n ${GREEN} GSL is installed. Building c++ demo ${ENDL} \n\n\n")
+
 	# COMPILE AND LINK
 	add_executable(main ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 
@@ -74,6 +81,10 @@ if (GSL_FOUND)
 		kernel_pca
 		${GSL_LIBRARIES}
 	)
+else ()
+
+	message( "\n\n\n ${RED} GSL not installed. C++ demo not being built ${ENDL}\n\n\n ")
+
 endif ()
 
 
@@ -84,6 +95,9 @@ endif ()
 find_package( PythonLibs 2.7 QUIET)
 
 if (PYTHONLIBS_FOUND)
+
+        message("\n\n\n ${GREEN} Python 2.7 is installed. Building python wrappers ${ENDL} \n\n\n")
+
 
 	find_package( Boost COMPONENTS python REQUIRED )
 
@@ -111,7 +125,8 @@ if (PYTHONLIBS_FOUND)
 	set_target_properties( py_kernel_pca PROPERTIES PREFIX "" )
 else ()
 
-	message ("Python 2.7 not installed. Not building python wrappers")
+        message( "\n\n\n ${RED} Python 2.7 is not installed. Python wrappers will not be built! ${ENDL}\n\n\n ")
+
 
 endif ()
 
@@ -122,6 +137,7 @@ option(BUILD_TESTS "Build gtest module" ON)
 
 if (BUILD_TESTS)
 
+	message( "\n\n\n ${GREEN} Building Tests \n\n\n")
 
 	include(ExternalProject)
 

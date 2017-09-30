@@ -31,6 +31,11 @@ cd /path/to/GPU_GSPCA
 mkdir build && cd build
 cmake .. && make
 ```
+If you have everything installed, this will build the backend c code, c demo, python wrappers, and the tests. Messages will be displayed if any of the above are not built due to libraries missing, so be on the lookout.
+
+If you do not want to build the tests for whatever reason change the cmake call to:
+
+`cmake -DBUILD_TESTS=0 ..` 
 
 Make sure the install directory is in your python path, this can be done in your .bashrc as 
 
