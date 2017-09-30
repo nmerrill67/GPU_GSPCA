@@ -122,7 +122,6 @@ option(BUILD_TESTS "Build gtest module" ON)
 
 if (BUILD_TESTS)
 
-	message("___________ Building gtest ___________\n")
 
 	include(ExternalProject)
 
@@ -150,7 +149,6 @@ if (BUILD_TESTS)
 	set(GTEST_LIBS_DIR ${binary_dir}/googlemock/gtest)
 
 
-	message("__________ Done ___________\n")
 
 	enable_testing()
 

@@ -3,7 +3,8 @@
 #include "progressbar.h"
 
 
-KernelPCA::KernelPCA(int num_pcs=-1) : K(num_pcs)
+
+KernelPCA::KernelPCA() : K(-1)
 {
         // initialize cublas
         status = cublasInit();
@@ -13,6 +14,22 @@ KernelPCA::KernelPCA(int num_pcs=-1) : K(num_pcs)
                 std::runtime_error( "! CUBLAS initialization error\n");
         }
 }
+
+
+
+KernelPCA::KernelPCA(int num_pcs) : K(num_pcs)
+{
+        // initialize cublas
+        status = cublasInit();
+
+        if(status != CUBLAS_STATUS_SUCCESS)
+        {
+                std::runtime_error( "! CUBLAS initialization error\n");
+        }
+}
+
+
+
 
 KernelPCA::~KernelPCA()
 {
@@ -29,7 +46,7 @@ KernelPCA::~KernelPCA()
 
 
 
-double* KernelPCA::fit_transform(int M, int N, double *R, bool verbose)
+double* KernelPCA::fit_transform(int M, int N, double *R, bool verbose=false)
 {
 
 
@@ -180,7 +197,7 @@ double* KernelPCA::fit_transform(int M, int N, double *R, bool verbose)
 
 
 
-float* KernelPCA::fit_transform(int M, int N, float *R, bool verbose)
+float* KernelPCA::fit_transform(int M, int N, float *R, bool verbose=false)
 {
 
 

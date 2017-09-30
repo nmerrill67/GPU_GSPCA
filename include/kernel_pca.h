@@ -32,6 +32,8 @@ int K;
 cublasStatus status;
 
 public:
+
+KernelPCA();
 KernelPCA(int K);
 ~KernelPCA();
 
