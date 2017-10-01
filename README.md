@@ -1,27 +1,27 @@
-# Gram-Schmidt-PCA [![Build Status](https://travis-ci.org/nmerrill67/GPU_GSPCA.svg?branch=master)](https://travis-ci.org/nmerrill67/GPU_GSPCA)
+# GPU PCA [![Build Status](https://travis-ci.org/nmerrill67/GPU_GSPCA.svg?branch=master)](https://travis-ci.org/nmerrill67/GPU_GSPCA)
 
+If you have been looking for an open-source PCA library that runs on a GPU. This is it. This library is the only one of its kind.
 
-                                                                        
+This library implements PCA using the  GRAM-SCMIDT method, using the code written in [this paper](http://arxiv.org/pdf/0811.1081.pdf) as the backend for a c/c++ library and python wrappers. 
 
-
-This library implements PCA using the  GRAM-SCMIDT method, using the code written in [this paper](http://arxiv.org/pdf/0811.1081.pdf) as the backend for python wrappers. 
-
-This code includes the c/c++ interface as well as the python interface to run PCA on a cuda-capable gpu. It models the API of sklearn.decomposition.KernelPCA.
-
-Only fit_transform is implemented, so the pca model cannot be used between different datasets. However, this is not very important since the compute time for a model on the gpu is orders of magnitude less than on the cpu using sklearn.  
+This code includes the c/c++ interface as well as the python interface to run PCA on a cuda-capable gpu. It models the API of sklearn.decomposition.KernelPCA. 
 
 ## Requirements:
-- UNIX machine 
-- cmake
-- gcc, g++
-- ncurses (for waitbar)
-- gnu scientific library (for c++ demo)
-- cuda-capable gpu 
-- nvidia drivers and cuda installed
-- boost and boost python
-- python 2.7 
-- numpy
-- sklearn (for demo comparison to cpu pca implementation only)
+C/C++ Library:
+  - UNIX machine 
+  - cmake
+  - gcc, g++
+  - ncurses (for waitbar)
+  - gnu scientific library (for c++ demo)
+  - cuda-capable gpu 
+  - nvidia drivers and cuda installed
+
+Python Wrappers:
+  - C library requirements
+  - boost and boost python
+  - python 2.7 
+  - numpy
+  - sklearn (for demo comparison to cpu pca implementation only)
 
 ## Installation
 
@@ -47,8 +47,12 @@ After building the library, simply run:
 
 `make test`
 
-This will run all of the unit tests. If any of them fail, please start an issue! 
+This will run all of the C/C++ unit tests.
 
+For the python unit tests, run 
+`make pytest`
+
+If any of them fail, please start an issue! 
 
 ## Demos
 
