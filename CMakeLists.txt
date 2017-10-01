@@ -92,9 +92,13 @@ endif ()
 
 #### Python wrapper ############################
 
+set(PYTHON_BUILT 0)
+
 find_package( PythonLibs 2.7 QUIET)
 
 if (PYTHONLIBS_FOUND)
+
+	set(PYTHON_BUILT 1)
 
         message("\n\n\n ${GREEN} Python 2.7 is installed. Building python wrappers ${ENDL} \n\n\n")
 
@@ -133,7 +137,7 @@ endif ()
 	
 #### Tests #######################################
 
-option(BUILD_TESTS "Build gtest module" ON)
+option(BUILD_TESTS "Build gtest module and python tests (if python wrappers are built)" ON)
 
 if (BUILD_TESTS)
 
@@ -186,9 +190,17 @@ if (BUILD_TESTS)
 	target_link_libraries(${PROJECT_TEST_NAME} ${CMAKE_THREAD_LIBS_INIT})
 
 
-	add_test(test ${PROJECT_TEST_NAME})	
+	add_test(kernel_pca_test ${PROJECT_TEST_NAME})	
 
+	if(PYTHON_BUILT)
+	
+		message("${GREEN} Python tests being run ${ENDL}")
+		
+	
+                add_custom_target(pytest COMMAND python -m unittest -v py_kernel_pca_test.TestKernelPCA WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test )
+	
 
+	endif()
 
 endif ()
 

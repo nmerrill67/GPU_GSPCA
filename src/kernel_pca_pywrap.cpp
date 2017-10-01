@@ -32,6 +32,7 @@ bool PyKernelPCA::CheckNpArray(PyObject* arr)
 }
 
 
+
 PyKernelPCA::PyKernelPCA(int n_components) : KernelPCA::KernelPCA(n_components){}
 
 PyObject* PyKernelPCA::fit_transform(PyObject* R_, bool verbose=0)
