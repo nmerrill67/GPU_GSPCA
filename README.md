@@ -52,7 +52,6 @@ This will run all of the C/C++ unit tests.
 For the python unit tests, run 
 `make pytest`
 
-If any of them fail, please start an issue! 
 
 ## Demos
 
