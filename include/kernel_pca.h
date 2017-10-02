@@ -7,7 +7,7 @@
 #include <string.h>
 #include <time.h>
 // includes, cuda
-#include <cublas_v2.h>
+#include "cublas_v2.h"
 
 
 // This indexing macro is not used internally, but is useful for users contructing data arrays in c or c++ 

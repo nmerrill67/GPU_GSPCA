@@ -9,7 +9,7 @@ endif()
 
 message("BUID TYPE = ${CMAKE_BUILD_TYPE}")
 
-set(CMAKE_C_FLAGS "-Wall -fPIC")
+set(CMAKE_C_FLAGS "-fPIC")
 
 # colors, because why not
 string(ASCII 27 Esc)
@@ -20,9 +20,9 @@ set(ENDL "${Esc}[m")
 # CUDA PACKAGE
 find_package(CUDA REQUIRED)
 # nvcc flags
-set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_50,code=sm_50)
-set(CUDA_SEPARABLE_COMPILATION OFF)
-set(CUDA_PROPAGATE_HOST_FLAGS OFF)
+set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};--compiler-options;-fPIC)
+#set(CUDA_SEPARABLE_COMPILATION ON)
+#set(CUDA_PROPAGATE_HOST_FLAGS ON)
 
 SET(CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc")
 
@@ -30,7 +30,7 @@ SET(CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc")
 
 cuda_include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/include
-	${CUDA_INCLUDE_DIRECTORIES}
+i	${CUDA_INCLUDE_DIRS}
 )
 
 cuda_add_library(kernel_pca SHARED
@@ -43,9 +43,7 @@ CUDA_ADD_CUBLAS_TO_TARGET(kernel_pca ${CMAKE_CURRENT_SOURCE_DIR}/src/kernel_pca.
 
 CUDA_COMPILE(kernel_pca ${CMAKE_CURRENT_SOURCE_DIR}/src/kernel_pca.cu)
 
-target_link_libraries(kernel_pca
-	cuda
-)
+target_link_libraries(kernel_pca ${CUDA_LIBRARIES})
 
 
 

@@ -1,5 +1,4 @@
 #include "kernel_pca.h"
-#include <stdio.h> /* for fprintf and stderr */
 
 
 
