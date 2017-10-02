@@ -194,11 +194,15 @@ if (BUILD_TESTS)
 
 	if(PYTHON_BUILT)
 	
-		message("${GREEN} Python tests being run ${ENDL}")
+		message("${GREEN} Python tests built ${ENDL}")
 		
 	
-                add_custom_target(pytest COMMAND python -m unittest -v py_kernel_pca_test.TestKernelPCA WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test )
+                add_custom_target(tests COMMAND make test && cd ../test && python -m unittest -v py_kernel_pca_test.TestKernelPCA WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/build)
 	
+	else()
+
+		
+                add_custom_target(tests COMMAND make test WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/build)
 
 	endif()
 

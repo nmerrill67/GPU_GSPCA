@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from py_kernel_pca import KernelPCA, delete_arr
+from py_kernel_pca import KernelPCA
 
 class TestKernelPCA(unittest.TestCase):
 
@@ -134,7 +134,4 @@ class TestKernelPCA(unittest.TestCase):
 
 		self.assertEqual(self.test_pca.get_n_components(), self.N-2) # should have been reset internally once the algorithm saw K was bigger than N
 	
-
-
-
 

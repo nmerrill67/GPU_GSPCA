@@ -45,13 +45,9 @@ Make sure the install directory is in your python path, this can be done in your
 
 After building the library, simply run:
 
-`make test`
+`make tests`
 
-This will run all of the C/C++ unit tests.
-
-For the python unit tests, run 
-`make pytest`
-
+If you have the python wrappers built, it will run the C tests and the python tests in the test directory, otherwise it will just run the C tests.
 
 ## Demos
 

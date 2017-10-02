@@ -182,13 +182,6 @@ PyObject* PyKernelPCA::fit_transform(PyObject* R_, bool verbose=0)
        	return T_PyArr;
 }
 
-void delete_arr(PyObject* arr)
-{
-
-	int refc;
-	for (refc = (int)arr->ob_refcnt; refc > 0; refc--) Py_DECREF(arr);
-
-}
 
 
 boost::shared_ptr<PyKernelPCA> initWrapper(int n_components)
@@ -231,7 +224,6 @@ BOOST_PYTHON_MODULE(py_kernel_pca)
 		.def("set_n_components", &KernelPCA::set_n_components)	
 	;
 	
-	boost::python::def("delete_arr", &delete_arr);
 
 }
 
