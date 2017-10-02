@@ -9,7 +9,6 @@ endif()
 
 message("BUID TYPE = ${CMAKE_BUILD_TYPE}")
 
-set(CMAKE_C_FLAGS "-fPIC")
 
 # colors, because why not
 string(ASCII 27 Esc)
@@ -20,10 +19,7 @@ set(ENDL "${Esc}[m")
 # CUDA PACKAGE
 find_package(CUDA REQUIRED)
 # nvcc flags
-set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};--compiler-options;-fPIC)
-#set(CUDA_SEPARABLE_COMPILATION ON)
-#set(CUDA_PROPAGATE_HOST_FLAGS ON)
-
+set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};--compiler-options;-Wall;--compiler-options;-fPIC)
 SET(CUDA_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/nvcc")
 
 

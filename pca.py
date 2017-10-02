@@ -10,7 +10,7 @@ from pycuda.gpuarray import GPUArray
 
 # Load kernel_pca library:
 if 'linux' in sys.platform:
-	_libkernel_pca_libname = 'build/kernel_pca.so'
+	_libkernel_pca_libname = 'build/libkernel_pca.so'
 	'''
 	elif sys.platform == 'darwin':
 	    _libcublas_libname_list = ['libcublas.dylib']
@@ -27,23 +27,23 @@ else:
 
 # Print understandable error message when library cannot be found:
 
-#try:
-'''
-if sys.platform == 'win32':
-    _libcublas = ctypes.windll.LoadLibrary(_libcublas_libname)
-else:
-'''
-_libkernel_pca = cdll.LoadLibrary(_libkernel_pca_libname)
+try:
+	'''
+	if sys.platform == 'win32':
+	    _libcublas = ctypes.windll.LoadLibrary(_libcublas_libname)
+	else:
+	'''
+	_libkernel_pca = cdll.LoadLibrary(_libkernel_pca_libname)
 
-#except OSError:
-#	raise OSError('kernel_pca library not found')
+except OSError:
+	raise OSError('kernel_pca library not found')
 
 
 _libkernel_pca.dev_fit_transform_d.restype = POINTER(c_double) 
-_libkernel_pca.dev_fit_transform_d.argtypes = [_types.handle, int, int, POINTER(c_double), int]
+_libkernel_pca.dev_fit_transform_d.argtypes = [_types.handle, c_int, c_int, POINTER(c_double), c_int]
 
 _libkernel_pca.dev_fit_transform_f.restype = POINTER(c_float) 
-_libkernel_pca.dev_fit_transform_d.argtypes = [_types.handle, int, int, POINTER(c_float), int]
+_libkernel_pca.dev_fit_transform_d.argtypes = [_types.handle, c_int, c_int, POINTER(c_float), c_int]
 
 class KernelPCA:
 	

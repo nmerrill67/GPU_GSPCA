@@ -42,7 +42,7 @@
 */
 
 
-double* dev_fit_transform_d(cublasHandle_t h, int M, int N, double *dX, int K);
+extern "C" double* dev_fit_transform_d(cublasHandle_t h, int M, int N, double *dX, int K);
 
 
 /*
@@ -64,6 +64,6 @@ double* dev_fit_transform_d(cublasHandle_t h, int M, int N, double *dX, int K);
  T: float* - device pointer to transformed matrix, with the same indexing as X
 */
 
-float* dev_fit_transform_f(cublasHandle_t h, int M, int N, float *dX, int K);
+extern "C" float* dev_fit_transform_f(cublasHandle_t h, int M, int N, float *dX, int K);
 
 

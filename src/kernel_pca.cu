@@ -4,7 +4,7 @@
 
 
 
-double* dev_fit_transform_d(cublasHandle_t h, int M, int N, double *dR, int K)
+extern "C" double* dev_fit_transform_d(cublasHandle_t h, int M, int N, double *dR, int K)
 {
 
 
@@ -133,7 +133,7 @@ double* dev_fit_transform_d(cublasHandle_t h, int M, int N, double *dR, int K)
 
 
 
-float* dev_fit_transform_f(cublasHandle_t h, int M, int N, float *dR, int K)
+extern "C" float* dev_fit_transform_f(cublasHandle_t h, int M, int N, float *dR, int K)
 {
 
 	cudaError_t status;
