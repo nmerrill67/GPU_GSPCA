@@ -5,7 +5,7 @@
 
 
 
-double* dev_fit_transform(cublasHandle_t h, int M, int N, double *dR, int K)
+double* dev_fit_transform_d(cublasHandle_t h, int M, int N, double *dR, int K)
 {
 
 
@@ -29,14 +29,14 @@ double* dev_fit_transform(cublasHandle_t h, int M, int N, double *dR, int K)
 	// allocate device memory for T, P
 	double *dT = 0;
 	status = cudaMalloc(&dT, M*K*sizeof(dT[0]));
-	if(status != CUBLAS_STATUS_SUCCESS)
+	if(status != cudaSuccess)
 	{
 		fprintf(stderr, "! cuda memory allocation error (dT)\n");
 	}
 
 	double *dP = 0;
 	status = cudaMalloc(&dP, N*K*sizeof(dP[0]));
-	if(status != CUBLAS_STATUS_SUCCESS)
+	if(status != cudaSuccess)
 	{
 		fprintf(stderr, "! cuda memory allocation error (dP)\n");
 	}
@@ -52,7 +52,7 @@ double* dev_fit_transform(cublasHandle_t h, int M, int N, double *dR, int K)
 	// mean center the data
 	double *dU = 0;
 	status = cudaMalloc(&dU, M*sizeof(dU[0]));
-	if(status != CUBLAS_STATUS_SUCCESS)
+	if(status != cudaSuccess)
 	{
 		fprintf(stderr, "! cuda memory allocation error (dU)\n");
 	}
@@ -74,7 +74,7 @@ double* dev_fit_transform(cublasHandle_t h, int M, int N, double *dR, int K)
 	}
 
 	double zero = 0.0;
-	double *norm;
+	double *norm = 0;
 	double one_over_norm;	
 	double one_Lk;
 	double n_Lk;
@@ -134,7 +134,7 @@ double* dev_fit_transform(cublasHandle_t h, int M, int N, double *dR, int K)
 
 
 
-float* dev_fit_transform(cublasHandle_t h, int M, int N, float *dR, int K)
+float* dev_fit_transform_f(cublasHandle_t h, int M, int N, float *dR, int K)
 {
 
 	cudaError_t status;
@@ -155,14 +155,14 @@ float* dev_fit_transform(cublasHandle_t h, int M, int N, float *dR, int K)
 	// allocate device memory for T, P
 	float *dT = 0;
 	status = cudaMalloc(&dT, M*K*sizeof(dT[0]));
-	if(status != CUBLAS_STATUS_SUCCESS)
+	if(status != cudaSuccess)
 	{
 		fprintf(stderr, "! cuda memory allocation error (dT)\n");
 	}
 
 	float *dP = 0;
 	status = cudaMalloc(&dP, N*K*sizeof(dP[0]));
-	if(status != CUBLAS_STATUS_SUCCESS)
+	if(status != cudaSuccess)
 	{
 		fprintf(stderr, "! cuda memory allocation error (dP)\n");
 	}
@@ -178,7 +178,7 @@ float* dev_fit_transform(cublasHandle_t h, int M, int N, float *dR, int K)
 	// mean center the data
 	float *dU = 0;
 	status = cudaMalloc(&dU, M*sizeof(dU[0]));
-	if(status != CUBLAS_STATUS_SUCCESS)
+	if(status != cudaSuccess)
 	{
 		fprintf(stderr, "! cuda memory allocation error (dU)\n");
 	}
@@ -199,7 +199,7 @@ float* dev_fit_transform(cublasHandle_t h, int M, int N, float *dR, int K)
 	}
 	
 	float zero = 0.0;
-	float *norm;
+	float *norm = 0;
 	float one_over_norm;	
 	float one_Lk;
 	float n_Lk;
