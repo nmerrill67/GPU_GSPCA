@@ -11,7 +11,7 @@ cpu_pca = sklearn.decomposition.KernelPCA(n_components=4)
 
 print "PCA for 10000x500 matrix. Computing 4 principal components\n\n"
 
-X = np.random.rand(10000,500).astype(np.float32)
+X = np.array([[1,2,3],[4,5,6],[7,8,9]]).astype(np.float64)
 
 X_f = np.copy(X) # make  copy of X, otherwise T1 and T2 share the same reference. Additionally, the gpu pca currently only takes float32 type.i
 
@@ -19,6 +19,7 @@ t0 = time()
 T1 = gpu_pca.fit_transform(X_f, verbose=True)
 print "GPU PCA compute time = ", (time() - t0)
 
+'''
 t1 = time()
 T2 = cpu_pca.fit_transform(X)
 print "CPU PCA compute time = " , (time() - t1)
@@ -29,7 +30,7 @@ print "This is tested by dotting the first and second largest eigenvectors (prin
 
 print "\n\nThis library's GPU PCA: T0 . T1 = ", np.dot(T1[:,0], T1[:,1])
 print "sklearns's CPU PCA: T0 . T1 = ", np.dot(T2[:,0], T2[:,1])
-
+'''
 
 
 

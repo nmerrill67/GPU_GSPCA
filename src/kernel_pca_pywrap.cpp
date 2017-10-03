@@ -41,7 +41,7 @@ PyObject* PyKernelPCA::fit_transform(PyObject* R_, bool verbose=0)
         bool isFloat;
 
 
-        isFloat = CheckNpArray(R_); // check: is the input array c-coontiguous, is it float32 type and also is it 2D
+        isFloat = CheckNpArray(R_); // check: is the input array c-contiguous, is it float32 type and also is it 2D
 
 
         int M, N;
@@ -53,32 +53,9 @@ PyObject* PyKernelPCA::fit_transform(PyObject* R_, bool verbose=0)
 	if (isFloat)
 	{
 
-		float* R; // C array from numpy array
+		float* R;
+		R = c_cont_npy_to_f_cont_float_ptr(M, N, R_);
 
-		R = (float*)malloc(M*N * sizeof(R[0]));
-		if (R == 0)
-		{
-			throw std::runtime_error("Cannot allocate memory for C array R");
-		}
-
-
-		npy_intp* strides  = PyArray_STRIDES(R_); // strides for data gaps
-		int s0, s1;
-		s0 = strides[0]; s1 = strides[1];
-
-
-		char* R_data = (char*)PyArray_DATA(R_);
-
-
-
-		// switch to fortran contiguous for KernelPCA, and at the same time switch to a c array from the PyObject 
-		for (int m = 0; m < M; m++)
-		{
-			for (int n = 0; n < N; n++)
-			{
-				R[ind_f(m,n,M)] = *(float*)&R_data[ m*s0 + n*s1 ];
-			}
-		}
 
 
 		float* T;
@@ -115,33 +92,9 @@ PyObject* PyKernelPCA::fit_transform(PyObject* R_, bool verbose=0)
 	}
 	else
 	{
-		double* R; // C array from numpy array
 
-		R = (double*)malloc(M*N * sizeof(R[0]));
-		if (R == 0)
-		{
-			throw std::runtime_error("Cannot allocate memory for C array R");
-		}
-
-
-		npy_intp* strides  = PyArray_STRIDES(R_); // strides for data gaps
-		int s0, s1;
-		s0 = strides[0]; s1 = strides[1];
-
-
-		char* R_data = (char*)PyArray_DATA(R_);
-
-
-
-		// switch to fortran contiguous for KernelPCA, and at the same time switch to a c array from the PyObject 
-		for (int m = 0; m < M; m++)
-		{
-			for (int n = 0; n < N; n++)
-			{
-				R[ind_f(m,n,M)] = *(double*)&R_data[ m*s0 + n*s1 ];
-			}
-		}
-
+		double* R;
+		R = c_cont_npy_to_f_cont_double_ptr(M, N, R_);
 
 		double* T;		
 		
@@ -182,7 +135,76 @@ PyObject* PyKernelPCA::fit_transform(PyObject* R_, bool verbose=0)
        	return T_PyArr;
 }
 
+float* PyKernelPCA::c_cont_npy_to_f_cont_float_ptr(int M, int N, PyObject* R_)
+{
 
+
+	float* R; // C array from numpy array
+
+	R = (float*)malloc(M*N * sizeof(R[0]));
+	if (R == 0)
+	{
+		throw std::runtime_error("Cannot allocate memory for C array R");
+	}
+
+
+	npy_intp* strides  = PyArray_STRIDES(R_); // strides for data gaps
+	int s0, s1;
+	s0 = strides[0]; s1 = strides[1];
+
+
+	char* R_data = (char*)PyArray_DATA(R_);
+
+
+
+	// switch to fortran contiguous for KernelPCA, and at the same time switch to a c array from the PyObject 
+	for (int m = 0; m < M; m++)
+	{
+		for (int n = 0; n < N; n++)
+		{
+			R[ind_f(m,n,M)] = *(float*)&R_data[ m*s0 + n*s1 ];
+		}
+	}
+
+
+	return R;
+
+}
+
+
+double* PyKernelPCA::c_cont_npy_to_f_cont_double_ptr(int M, int N, PyObject* R_)
+{
+	double* R; // C array from numpy array
+
+	R = (double*)malloc(M*N * sizeof(R[0]));
+	if (R == 0)
+	{
+		throw std::runtime_error("Cannot allocate memory for C array R");
+	}
+
+
+	npy_intp* strides  = PyArray_STRIDES(R_); // strides for data gaps
+	int s0, s1;
+	s0 = strides[0]; s1 = strides[1];
+
+
+	char* R_data = (char*)PyArray_DATA(R_);
+
+
+
+	// switch to fortran contiguous for KernelPCA, and at the same time switch to a c array from the PyObject 
+	for (int m = 0; m < M; m++)
+	{
+		for (int n = 0; n < N; n++)
+		{
+			R[ind_f(m,n,M)] = *(double*)&R_data[ m*s0 + n*s1 ];
+		}
+	}
+
+	return R;
+
+
+}
 
 boost::shared_ptr<PyKernelPCA> initWrapper(int n_components)
 {

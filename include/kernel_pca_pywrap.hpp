@@ -15,6 +15,9 @@ private:
 
 bool CheckNpArray(PyObject* arr);
 
+// Copy a c-contiguous strided numpy array to a fortran-contiguous float or double array
+float* c_cont_npy_to_f_cont_float_ptr(int M, int N, PyObject* R_);
+double* c_cont_npy_to_f_cont_double_ptr(int M, int N, PyObject* R_);
 
 public:
 
