@@ -46,7 +46,7 @@
 */
 
 
-extern "C" double* dev_fit_transform_d(cublasHandle_t h, int M, int N, double *dX, int K, bool is_c_contiguous);
+extern "C" double* dev_fit_transform_d(cublasHandle_t h, int M, int N, double *dX, int K);
 
 
 /*
@@ -68,16 +68,16 @@ extern "C" double* dev_fit_transform_d(cublasHandle_t h, int M, int N, double *d
  T: float* - device pointer to transformed matrix, with the same indexing as X
 */
 
-extern "C" float* dev_fit_transform_f(cublasHandle_t h, int M, int N, float *dX, int K, bool is_c_contiguous);
+extern "C" float* dev_fit_transform_f(cublasHandle_t h, int M, int N, float *dX, int K);
 
 // functions to switch contiguity of gpu arrays. They alter the original array
 
 // This function is explicitly for converting general pycuda arrays to fortran contiguous with stride [1,1]
-extern "C" void c_strided_to_f_contiguous_f(int M, int N, int* strides, float* arr);
+extern "C" void c_strided_to_f_contiguous_f(int M, int N, int* strides, const float* arr);
 
 // for converting back to c contiguous if the original array was c contiguous
-extern "C" void f_to_c_contiguous_f(int M, int N, int* strides ,float* arr);
+extern "C" void f_to_c_contiguous_f(int M, int N, int* strides, const float* arr);
 
 // same as above, but for double precision
-extern "C" void c_strided_to_f_contiguous_d(int M, int N, int* strides, double* arr);
-extern "C" void f_to_c_contiguous_d(int M, int N, int* strides, double* arr);
+extern "C" void c_strided_to_f_contiguous_d(int M, int N, int* strides, const double* arr);
+extern "C" void f_to_c_contiguous_d(int M, int N, int* strides, const double* arr);

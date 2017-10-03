@@ -4,7 +4,7 @@
 
 
 
-extern "C" double* dev_fit_transform_d(cublasHandle_t h, int M, int N, double *dR, int K, bool is_c_contiguous)
+extern "C" double* dev_fit_transform_d(cublasHandle_t h, int M, int N, double *dR, int K)
 {
 
 
@@ -15,12 +15,6 @@ extern "C" double* dev_fit_transform_d(cublasHandle_t h, int M, int N, double *d
 
 	// max error
 	double er = 1.0e-7;
-
-        // if no K specified, or K > min(M, N)
-        int K_;
-        K_ = min(M, N);
-        if (K == -1 || K > K_) K = K_;
-
 	
 
 	int n, j, k;
@@ -133,9 +127,8 @@ extern "C" double* dev_fit_transform_d(cublasHandle_t h, int M, int N, double *d
 
 
 
-extern "C" float* dev_fit_transform_f(cublasHandle_t h, int M, int N, float *dR, int K, bool is_c_contiguous)
+extern "C" float* dev_fit_transform_f(cublasHandle_t h, int M, int N, float *dR, int K)
 {
-
 	cudaError_t status;
 
 	// maximum number of iterations
@@ -143,11 +136,6 @@ extern "C" float* dev_fit_transform_f(cublasHandle_t h, int M, int N, float *dR,
 
 	// max error
 	float er = 1.0e-7;
-
-        // if no K specified, or K > min(M, N)
-        int K_;
-        K_ = min(M, N);
-        if (K == -1 || K > K_) K = K_;
 
 	int n, j, k;
 
@@ -257,7 +245,7 @@ extern "C" float* dev_fit_transform_f(cublasHandle_t h, int M, int N, float *dR,
 }
 
 
-extern "C" void c_strided_to_f_contiguous_f(int M, int N, int* strides, float* dArr)
+extern "C" void c_strided_to_f_contiguous_f(int M, int N, int* strides, const float* dArr)
 {
 
 	cudaError_t status;
@@ -273,6 +261,13 @@ extern "C" void c_strided_to_f_contiguous_f(int M, int N, int* strides, float* d
 
 	int s0, s1;
 	s0 = strides[0]; s1 = strides[1];	
+	
+	printf("\n\nIN C\n\n");
+	printf("dArr[0] = %f\n", dArr[0]);
+	printf("dArr ptr = %d\n", dArr);
+
+
+
 
 	for (int m = 0; m < M; m++)
 	{
@@ -282,14 +277,14 @@ extern "C" void c_strided_to_f_contiguous_f(int M, int N, int* strides, float* d
 		}
 	}
 
-	free(dArr);
+	free((void*)dArr);
 
 	dArr = dTmp;
 
 
 }
 
-extern "C" void f_to_c_contiguous_f(int M, int N, int* strides ,float* dArr)
+extern "C" void f_to_c_contiguous_f(int M, int N, int* strides, const float* dArr)
 {
 
 
@@ -312,7 +307,7 @@ extern "C" void f_to_c_contiguous_f(int M, int N, int* strides ,float* dArr)
 		}
 	}
 
-	free(dArr);
+	free((void*)dArr);
 
 	dArr = dTmp;
 
@@ -321,7 +316,7 @@ extern "C" void f_to_c_contiguous_f(int M, int N, int* strides ,float* dArr)
 
 }
 
-extern "C" void c_strided_to_f_contiguous_d(int M, int N, int* strides, double* dArr)
+extern "C" void c_strided_to_f_contiguous_d(int M, int N, int* strides, const double* dArr)
 {
 
 
@@ -339,6 +334,10 @@ extern "C" void c_strided_to_f_contiguous_d(int M, int N, int* strides, double* 
 	int s0, s1;
 	s0 = strides[0]; s1 = strides[1];
 
+	printf("s0 = %d\n", s0);
+
+	printf("s1 = %d\n", s1);
+
 	for (int m = 0; m < M; m++)
 	{
 		for (int n = 0; n < N; n++)
@@ -347,7 +346,7 @@ extern "C" void c_strided_to_f_contiguous_d(int M, int N, int* strides, double* 
 		}
 	}
 
-	free(dArr);
+	free((void*)dArr);
 
 	dArr = dTmp;
 
@@ -356,7 +355,7 @@ extern "C" void c_strided_to_f_contiguous_d(int M, int N, int* strides, double* 
 
 }
 
-extern "C" void f_to_c_contiguous_d(int M, int N, int* strides, double* dArr)
+extern "C" void f_to_c_contiguous_d(int M, int N, int* strides, const double* dArr)
 {
 
 
@@ -379,7 +378,7 @@ extern "C" void f_to_c_contiguous_d(int M, int N, int* strides, double* dArr)
 		}
 	}
 
-	free(dArr);
+	free((void*)dArr);
 
 	dArr = dTmp;
 
