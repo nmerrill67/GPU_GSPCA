@@ -16,6 +16,10 @@
 #define ind_f(m, n, num_rows) (((n) * (num_rows)) + (m))
 
 
+// indexing for c contiguous arrays. This is only used if  a numpy array is c contiguous, then it needs to be converted to fortran contiguous for KernelPCA. 
+#define ind_c(m, n, num_cols) (((m) * (num_cols)) + (n))
+
+
 // useful macro
 #define __min__(a,b) \
    ({ __typeof__ (a) _a = (a); \
@@ -42,7 +46,7 @@
 */
 
 
-extern "C" double* dev_fit_transform_d(cublasHandle_t h, int M, int N, double *dX, int K);
+extern "C" double* dev_fit_transform_d(cublasHandle_t h, int M, int N, double *dX, int K, bool is_c_contiguous);
 
 
 /*
@@ -64,6 +68,16 @@ extern "C" double* dev_fit_transform_d(cublasHandle_t h, int M, int N, double *d
  T: float* - device pointer to transformed matrix, with the same indexing as X
 */
 
-extern "C" float* dev_fit_transform_f(cublasHandle_t h, int M, int N, float *dX, int K);
+extern "C" float* dev_fit_transform_f(cublasHandle_t h, int M, int N, float *dX, int K, bool is_c_contiguous);
 
+// functions to switch contiguity of gpu arrays. They alter the original array
 
+// This function is explicitly for converting general pycuda arrays to fortran contiguous with stride [1,1]
+extern "C" void c_strided_to_f_contiguous_f(int M, int N, int* strides, float* arr);
+
+// for converting back to c contiguous if the original array was c contiguous
+extern "C" void f_to_c_contiguous_f(int M, int N, int* strides ,float* arr);
+
+// same as above, but for double precision
+extern "C" void c_strided_to_f_contiguous_d(int M, int N, int* strides, double* arr);
+extern "C" void f_to_c_contiguous_d(int M, int N, int* strides, double* arr);

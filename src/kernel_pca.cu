@@ -4,7 +4,7 @@
 
 
 
-extern "C" double* dev_fit_transform_d(cublasHandle_t h, int M, int N, double *dR, int K)
+extern "C" double* dev_fit_transform_d(cublasHandle_t h, int M, int N, double *dR, int K, bool is_c_contiguous)
 {
 
 
@@ -133,7 +133,7 @@ extern "C" double* dev_fit_transform_d(cublasHandle_t h, int M, int N, double *d
 
 
 
-extern "C" float* dev_fit_transform_f(cublasHandle_t h, int M, int N, float *dR, int K)
+extern "C" float* dev_fit_transform_f(cublasHandle_t h, int M, int N, float *dR, int K, bool is_c_contiguous)
 {
 
 	cudaError_t status;
@@ -257,7 +257,135 @@ extern "C" float* dev_fit_transform_f(cublasHandle_t h, int M, int N, float *dR,
 }
 
 
+extern "C" void c_strided_to_f_contiguous_f(int M, int N, int* strides, float* dArr)
+{
 
+	cudaError_t status;
+
+	float* dTmp;
+
+	status = cudaMalloc(&dTmp, M*N*sizeof(dTmp[0]));
+	if(status != cudaSuccess)
+	{
+		fprintf(stderr, "! cuda memory allocation error during contiguity switch\n");
+	}
+
+
+	int s0, s1;
+	s0 = strides[0]; s1 = strides[1];	
+
+	for (int m = 0; m < M; m++)
+	{
+		for (int n = 0; n < N; n++)
+		{
+			dTmp[ind_f(m,n,M)] = *(float*)&dArr[ m*s0 + n*s1 ];
+		}
+	}
+
+	free(dArr);
+
+	dArr = dTmp;
+
+
+}
+
+extern "C" void f_to_c_contiguous_f(int M, int N, int* strides ,float* dArr)
+{
+
+
+	cudaError_t status;
+
+	float* dTmp;
+
+	status = cudaMalloc(&dTmp, M*N*sizeof(dTmp[0]));
+	if(status != cudaSuccess)
+	{
+		fprintf(stderr, "! cuda memory allocation error during contiguity switch\n");
+	}
+
+
+	for (int m = 0; m < M; m++)
+	{
+		for (int n = 0; n < N; n++)
+		{
+			dTmp[ind_c(m,n,N)] = dArr[ind_f(m,n,M)];
+		}
+	}
+
+	free(dArr);
+
+	dArr = dTmp;
+
+
+
+
+}
+
+extern "C" void c_strided_to_f_contiguous_d(int M, int N, int* strides, double* dArr)
+{
+
+
+	cudaError_t status;
+
+	double* dTmp;
+
+	status = cudaMalloc(&dTmp, M*N*sizeof(dTmp[0]));
+	if(status != cudaSuccess)
+	{
+		fprintf(stderr, "! cuda memory allocation error during contiguity switch\n");
+	}
+
+
+	int s0, s1;
+	s0 = strides[0]; s1 = strides[1];
+
+	for (int m = 0; m < M; m++)
+	{
+		for (int n = 0; n < N; n++)
+		{
+			dTmp[ind_f(m,n,M)] = *(double*)&dArr[ m*s0 + n*s1 ];
+		}
+	}
+
+	free(dArr);
+
+	dArr = dTmp;
+
+
+
+
+}
+
+extern "C" void f_to_c_contiguous_d(int M, int N, int* strides, double* dArr)
+{
+
+
+	cudaError_t status;
+
+	double* dTmp;
+
+	status = cudaMalloc(&dTmp, M*N*sizeof(dTmp[0]));
+	if(status != cudaSuccess)
+	{
+		fprintf(stderr, "! cuda memory allocation error during contiguity switch\n");
+	}
+
+
+	for (int m = 0; m < M; m++)
+	{
+		for (int n = 0; n < N; n++)
+		{
+			dTmp[ind_c(m,n,N)] = dArr[ind_f(m,n,M)];
+		}
+	}
+
+	free(dArr);
+
+	dArr = dTmp;
+
+
+
+}
 
 
 
