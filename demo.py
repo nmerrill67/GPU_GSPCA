@@ -11,7 +11,7 @@ cpu_pca = sklearn.decomposition.KernelPCA(n_components=4)
 
 print "PCA for 10000x500 matrix. Computing 4 principal components\n\n"
 
-X = np.random.rand(10000,500).astype(np.float32)
+X = np.random.rand(10000, 500).astype(np.float32)
 
 X_f = np.copy(X) # make  copy of X, otherwise T1 and T2 share the same reference. Additionally, the gpu pca currently only takes float32 type.i
 

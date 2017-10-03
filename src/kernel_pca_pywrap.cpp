@@ -166,7 +166,6 @@ float* PyKernelPCA::c_cont_npy_to_f_cont_float_ptr(int M, int N, PyObject* R_)
 		}
 	}
 
-
 	return R;
 
 }
