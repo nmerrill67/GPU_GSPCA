@@ -1,40 +1,63 @@
-
 import numpy as np
 from pycuda import gpuarray, cumath, autoinit
-from skcuda import cublas, misc
+from skcuda import cublas, misc, linalg
 
 
 class KernelPCA():
 
 	
-	def __init__(self, n_components=None, epsilon=0.0000001, max_iter=10000):
+	def __init__(self, n_components=None, handle=None, epsilon=0.0000001, max_iter=10000):
 		
 		self.n_components = n_components
 		self.epsilon = epsilon
 		self.max_iter = max_iter	
 		misc.init()
-	
-		self.h = cublas.cublasCreate() # create a handle to initialize cublas
+		
+		if handle is None:
+			self.h = misc._global_cublas_handle # create a handle to initialize cublas
+		else:	
+			self.h = handle
+			
 
 	def fit_transform(self, R_gpu):
 
 		"""
-		Compute the first <n_components> principal components of X using the pycuda library.
+		Principal Component Analysis.
 
-		n: number of samples in X
-		p: number of dimmensions of X
-		n_components: number of principal components to compute
+		Compute the first K principal components of R_gpu using the
+		Gram-Schmidt orthogonalization algorithm provided by [Andrecut, 2008].
 
-		Note that this function takes as input and returns numpy arrays, not gpuarrays. The gpu processing is all done internally in the function.
-
-		Input:
-		X - nxp numpy.array(dtype=float32): data matrix that needs to be reduced
-		n_components - int: number of principal components to use
-		epsilon - float: max error tolerance for eigen value calculation
-		max_iter - int: maximum iterations to compute eigenvector 
+		Parameters
+		----------
+		R_gpu: pycuda.gpuarray.GPUArray
+			NxP (N = number of samples, P = number of variables) data matrix that needs 
+			to be reduced. R_gpu can be of type numpy.float32 or numpy.float64.
+			Note that if R_gpu is not instantiated with the kwarg 'order="F"', 
+			specifying a fortran-contiguous (row-major) array structure,
+			fit_transform will throw an error.
+		n_components: int
+			The number of principal component column vectors to compute in the output 
+			matrix.
+		epsilon: float	
+			The maximum error tolerance for eigen value approximation.
+		max_iter: int
+			The maximum number of iterations in approximating each eigenvalue  
 		
-		Outputs:
-		T - nxk numpy.array: the first k principal components.
+
+		Returns
+		-------
+		T_gpu: pycuda.gpuarray.GPUArray
+			`NxK` matrix of the first K principal components of R_gpu. 
+
+		References
+		----------
+		`[Andrecut, 2008] <https://arxiv.org/pdf/0811.1081.pdf>`_
+		
+
+		Notes
+		-----
+		If n_components was not set, then `K = min(N, P)`. Otherwise, `K = min(n_components, N, P)`
+		
 		"""
 
 		if R_gpu.flags.c_contiguous:
@@ -44,9 +67,29 @@ class KernelPCA():
 
 		p = R_gpu.shape[1] # num features
 
-		# internal memory strides for the array
-		s0 = R_gpu.strides[0]
-		s1 = R_gpu.strides[1]
+		# choose either single or doubel precision cublas functions
+		if R_gpu.dtype == 'float32':
+
+			cuAxpy = cublas.cublasSaxpy
+			cuCopy = cublas.cublasScopy
+			cuGemv = cublas.cublasSgemv
+			cuNrm2 = cublas.cublasSnrm2
+			cuScal = cublas.cublasSscal
+			cuGer =	cublas.cublasSger
+
+		elif R_gpu.dtype == 'float64':
+
+			cuAxpy = cublas.cublasDaxpy
+			cuCopy = cublas.cublasDcopy
+			cuGemv = cublas.cublasDgemv
+			cuNrm2 = cublas.cublasDnrm2
+			cuScal = cublas.cublasDscal
+			cuGer =	cublas.cublasDger
+
+
+
+		else:
+			raise ValueError("Array must be of type numpy.float32 or numpy.float64, not '" + R_gpu.dtype + "'") 
 
 		n_components = self.n_components
 
@@ -66,42 +109,42 @@ class KernelPCA():
 		U_gpu = misc.sum(R_gpu,axis=1) # nx1 sum the columns of R
 
 		for i in xrange(p):
-			cublas.cublasSaxpy(self.h, n, -1.0/p, U_gpu.gpudata, 1, R_gpu[:,i].gpudata, 1) 	
+			cuAxpy(self.h, n, -1.0/p, U_gpu.gpudata, 1, R_gpu[:,i].gpudata, 1) 	
 
 
 		for k in xrange(n_components):
 
 			mu = 0.0
 
-			cublas.cublasScopy(self.h, n, R_gpu[:,k].gpudata, 1, T_gpu[:,k].gpudata, 1)
+			cuCopy(self.h, n, R_gpu[:,k].gpudata, 1, T_gpu[:,k].gpudata, 1)
 
 			for j in xrange(self.max_iter):
 
 			
-				cublas.cublasSgemv(self.h, 't', n, p, 1.0, R_gpu.gpudata, n, T_gpu[:,k].gpudata, 1, 0.0, P_gpu[:,k].gpudata, 1)
+				cuGemv(self.h, 't', n, p, 1.0, R_gpu.gpudata, n, T_gpu[:,k].gpudata, 1, 0.0, P_gpu[:,k].gpudata, 1)
 		
 							
 				if k > 0:
 
-					cublas.cublasSgemv(self.h,'t', p, k, 1.0, P_gpu.gpudata, p, P_gpu[:,k].gpudata, 1, 0.0, U_gpu.gpudata, 1)  
+					cuGemv(self.h,'t', p, k, 1.0, P_gpu.gpudata, p, P_gpu[:,k].gpudata, 1, 0.0, U_gpu.gpudata, 1)  
 
-					cublas.cublasSgemv (self.h, 'n', p, k, 0.0-1.0, P_gpu.gpudata, p, U_gpu.gpudata, 1, 1.0, P_gpu[:,k].gpudata, 1)
+					cuGemv (self.h, 'n', p, k, 0.0-1.0, P_gpu.gpudata, p, U_gpu.gpudata, 1, 1.0, P_gpu[:,k].gpudata, 1)
 
 
-				l2 = cublas.cublasSnrm2(self.h, p, P_gpu[:,k].gpudata, 1)
-				cublas.cublasSscal(self.h, p, 1.0/l2, P_gpu[:,k].gpudata, 1)
+				l2 = cuNrm2(self.h, p, P_gpu[:,k].gpudata, 1)
+				cuScal(self.h, p, 1.0/l2, P_gpu[:,k].gpudata, 1)
 
-				cublas.cublasSgemv(self.h, 'n', n, p, 1.0, R_gpu.gpudata, n, P_gpu[:,k].gpudata, 1, 0.0, T_gpu[:,k].gpudata, 1)
+				cuGemv(self.h, 'n', n, p, 1.0, R_gpu.gpudata, n, P_gpu[:,k].gpudata, 1, 0.0, T_gpu[:,k].gpudata, 1)
 
 				if k > 0:
 
-					cublas.cublasSgemv(self.h, 't', n, k, 1.0, T_gpu.gpudata, n, T_gpu[:,k].gpudata, 1, 0.0, U_gpu.gpudata, 1)
-					cublas.cublasSgemv(self.h, 'n', n, k, 0.0-1.0, T_gpu.gpudata, n, U_gpu.gpudata, 1, 1.0, T_gpu[:,k].gpudata, 1)
+					cuGemv(self.h, 't', n, k, 1.0, T_gpu.gpudata, n, T_gpu[:,k].gpudata, 1, 0.0, U_gpu.gpudata, 1)
+					cuGemv(self.h, 'n', n, k, 0.0-1.0, T_gpu.gpudata, n, U_gpu.gpudata, 1, 1.0, T_gpu[:,k].gpudata, 1)
 			
 
-				Lambda[k] = cublas.cublasSnrm2(self.h, n, T_gpu[:,k].gpudata, 1)
+				Lambda[k] = cuNrm2(self.h, n, T_gpu[:,k].gpudata, 1)
 
-				cublas.cublasSscal(self.h, n, 1.0/Lambda[k], T_gpu[:,k].gpudata, 1)
+				cuScal(self.h, n, 1.0/Lambda[k], T_gpu[:,k].gpudata, 1)
 							
 
 				if abs(Lambda[k] - mu) < self.epsilon*Lambda[k]:
@@ -112,12 +155,16 @@ class KernelPCA():
 
 			# end for j
 
-			cublas.cublasSger(self.h, n, p, (0.0-Lambda[k]), T_gpu[:,k].gpudata, 1, P_gpu[:,k].gpudata, 1, R_gpu.gpudata, n)
+			cuGer(self.h, n, p, (0.0-Lambda[k]), T_gpu[:,k].gpudata, 1, P_gpu[:,k].gpudata, 1, R_gpu.gpudata, n)
 
 		# end for k
 
 		for k in xrange(n_components):
-			cublas.cublasSscal(self.h, n, Lambda[k], T_gpu[:,k].gpudata, 1) 
+			cuScal(self.h, n, Lambda[k], T_gpu[:,k].gpudata, 1) 
+
+		# free gpu memory
+		P_gpu.gpudata.free()
+		U_gpu.gpudata.free()
 
 		return T_gpu # return the gpu array
 
@@ -139,16 +186,17 @@ if __name__=='__main__':
 	T_gpu = pca_gpu.fit_transform(dX)
 	t1 = time()
 
-	print "gpu pca done"
+	print "gpu pca done\n"
 
+	print "output shape : ", T_gpu.shape
 	
 	t_gpu = t1-t0
 
 	print "GPU compute time: ", t_gpu
-	
-	T = T_gpu.get()
 
-	print "~ 0 : ", np.dot(T[:,0], T[:,1])
+	dot_product = linalg.dot(T_gpu[:,0], T_gpu[:,1])
+
+	print "T0 . T1 = ", dot_product
 
 	"""
 	pca_cpu = KernelPCA_cpu(n_components=174, n_jobs=-1)
