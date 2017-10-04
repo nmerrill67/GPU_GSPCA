@@ -173,6 +173,8 @@ if __name__=='__main__':
 	from sklearn.decomposition import KernelPCA as KernelPCA_cpu
 	from time import time
 
+	print "Computing 4 principal components of a 2000x100 matrix\n" 
+
 	X = np.random.rand(2000,100).astype(np.float32)
 	
 	# notice how it has to be Fortran contiguous
@@ -188,27 +190,24 @@ if __name__=='__main__':
 
 	print "gpu pca done\n"
 
-	print "output shape : ", T_gpu.shape
-	
 	t_gpu = t1-t0
 
-	print "GPU compute time: ", t_gpu
+	print "GPU compute time with skcuda.pca.KernelPCA: ", t_gpu
 
 	dot_product = linalg.dot(T_gpu[:,0], T_gpu[:,1])
 
-	print "T0 . T1 = ", dot_product
+	print "T0_gpu . T1_gpu = ", dot_product
 
-	"""
-	pca_cpu = KernelPCA_cpu(n_components=174, n_jobs=-1)
+	pca_cpu = KernelPCA_cpu(n_components=4, n_jobs=-1)
 	
 	t2 = time()
-	T2 = pca_cpu.fit_transform(X)
+	T_cpu = pca_cpu.fit_transform(X)
 	t3 = time()
 
 	t_cpu = t3-t2
 
-	print "PCA for 2000x100, 4 components"
-	print "CPU compute time: ", t_cpu
+	print "\nCPU compute time with sklearn.decomposition.KernelPCA: ", t_cpu
+	
+	print "T0_cpu . T1_cpu = ", np.dot(T_cpu[:,0], T_cpu[:,1])
 
-	"""
-
+	
