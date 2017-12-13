@@ -1,4 +1,4 @@
-# GPU PCA [![Build Status](https://travis-ci.org/nmerrill67/GPU_GSPCA.svg?branch=master)](https://travis-ci.org/nmerrill67/GPU_GSPCA)
+# GPU PCA
 
 If you have been looking for an open-source PCA library that runs on a GPU. This is it. This library is the only one of its kind.
 
