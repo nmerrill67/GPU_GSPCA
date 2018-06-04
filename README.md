@@ -1,6 +1,6 @@
 # GPU PCA
 
-If you have been looking for an open-source PCA library that runs on a GPU. This is it. This library is the only one of its kind.
+Check out the python version of this library in skcuda! This llibrary implements the same algorithm in C++ with cublas, so it is slightly faster. 
 
 This library implements PCA using the  GRAM-SCMIDT method, using the code written in [this paper](http://arxiv.org/pdf/0811.1081.pdf) as the backend for a c/c++ library and python wrappers. 
 
